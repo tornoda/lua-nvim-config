@@ -1,8 +1,9 @@
 require "nvchad.mappings"
+local telescope_builtin = require("telescope.builtin")
 
 -- add yours here
 
-local map = vim.keymap.set
+local map          = vim.keymap.set
 
 map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "jk", "<ESC>")
@@ -42,6 +43,10 @@ map("n", "<leader>b", "<cmd>Telescope buffers<CR>")
 map("n", "gr", "<cmd>Telescope lsp_references<CR>")
 map("n", "<leader><leader>", "<cmd>Telescope builtin<CR>")
 map("n", "gd", "<cmd>Telescope lsp_definitions<CR>")
+-- search the selection words
+map({"v", "n"}, "<leader>fw", function ()
+  telescope_builtin.grep_string()
+end)
 
 -- vim.api.nvim_create_autocmd('LspAttach', {
 --   callback = function(args)

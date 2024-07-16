@@ -28,6 +28,7 @@ autocmd('FileType', {
 autocmd('BufWinEnter', {
   pattern = "quickfix",
   callback =
+  -- https://github.com/folke/trouble.nvim/issues/70
       function()
         local buftype = "quickfix"
         if vim.fn.getloclist(0, { filewinid = 1 }).filewinid ~= 0 then
@@ -35,9 +36,12 @@ autocmd('BufWinEnter', {
         end
 
         local ok, trouble = pcall(require, "trouble")
+        -- local ok, telescope_builtin = pcall(require, "telescope.builtin")
         if ok then
           vim.defer_fn(function()
             vim.cmd("cclose")
+            -- telescope_builtin.quickfix()
+
             trouble.open(buftype)
             trouble.focus()
           end, 0)
@@ -50,3 +54,14 @@ autocmd('BufWinEnter', {
         end
       end
 })
+
+-- NvimTree
+-- autocmd('BufEnter', {
+--   pattern = "NvimTree",
+--   callback = function()
+--     print('h')
+--     vim.api.nvim_create_user_command('Search_under_dir', function()
+--       print('hello')
+--     end, {})
+--   end
+-- })
