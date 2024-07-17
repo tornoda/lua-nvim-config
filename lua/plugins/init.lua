@@ -12,11 +12,11 @@ return {
   },
 
   {
-      "tpope/vim-surround",
+    "tpope/vim-surround",
     event = 'BufEnter',              -- 在lazy.vim下这个必需加上
     config = function()
-        vim.g.surround_115 = "**\r**"  -- 115 is the ASCII code for 's'
-        vim.g.surround_47 = "/* \r */" -- 47 is /
+      vim.g.surround_115 = "**\r**"  -- 115 is the ASCII code for 's'
+      vim.g.surround_47 = "/* \r */" -- 47 is /
     end
   },
 
@@ -40,14 +40,14 @@ return {
       require "configs.lspconfig"
     end,
   },
-{
+  {
     "nvim-tree/nvim-tree.lua",
     cmd = { "NvimTreeToggle", "NvimTreeFocus" },
     opts = {
       renderer = {
         icons = {
           show = {
-            file =  false,
+            file = false,
             folder = false,
             git = false
           }
@@ -78,7 +78,12 @@ return {
   {
     "folke/trouble.nvim",
     cmd = "Trouble",
-    opts =  {},
+    opts = {
+      preview = {
+        type = "main",
+        scratch = false
+      }
+    },
     keys = {
       {
         "<leader>xx",
@@ -115,12 +120,12 @@ return {
   { -- 快速修改变量命名风格
     "chenasraf/text-transform.nvim",
     tag = "stable",
-        -- dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
+    -- dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
 
     config = function()
       require("text-transform").setup({
         debug = false,
-        keymap={
+        keymap = {
           -- Normal mode keymap.
           ["n"] = "<Leader>`",
           -- Visual mode keymap.
@@ -128,15 +133,15 @@ return {
         }
       })
     end,
-  }
-,  {
+  },
+  {
     "sindrets/diffview.nvim",
     event = "BufEnter",
     lazy = true,
     config = function()
       require("diffview").setup({
         file_panel = {
-          win_config = {                      -- See ':h diffview-config-win_config'
+          win_config = { -- See ':h diffview-config-win_config'
             position = "bottom",
             height = 15,
           },
@@ -144,16 +149,14 @@ return {
       })
     end,
   },
-
-
   {
-  	"williamboman/mason.nvim",
-  	opts = {
-  		ensure_installed = {
-  			"lua-language-server", "stylua",
-  			"html-lsp", "css-lsp" , "prettier"
-  		},
-  	},
+    "williamboman/mason.nvim",
+    opts = {
+      ensure_installed = {
+        "lua-language-server", "stylua",
+        "html-lsp", "css-lsp", "prettier"
+      },
+    },
   },
   --
   -- {
@@ -165,4 +168,13 @@ return {
   -- 		},
   -- 	},
   -- },
+  {
+    "ibhagwan/fzf-lua",
+    -- optional for icon support
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      -- calling `setup` is optional for customization
+      require("fzf-lua").setup({})
+    end
+  }
 }
