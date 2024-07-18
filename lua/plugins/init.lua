@@ -67,6 +67,31 @@ return {
     end,
     config = function(_, opts)
       local telescope = require "telescope"
+
+      telescope.extensions["ui-select"] = {
+        require("telescope.themes").get_dropdown {
+          -- even more opts
+        }
+
+        -- pseudo code / specification for writing custom displays, like the one
+        -- for "codeactions"
+        -- specific_opts = {
+        --   [kind] = {
+        --     make_indexed = function(items) -> indexed_items, width,
+        --     make_displayer = function(widths) -> displayer
+        --     make_display = function(displayer) -> function(e)
+        --     make_ordinal = function(e) -> string
+        --   },
+        --   -- for example to disable the custom builtin "codeactions" display
+        --      do the following
+        --   codeactions = false,
+        -- }
+      }
+
+
+
+
+
       telescope.setup(opts)
 
       -- load extensions
@@ -180,7 +205,7 @@ return {
   },
   {
     'nvimdev/lspsaga.nvim',
-    enabled =false,
+    enabled = false,
     event = 'LspAttach',
     config = function()
       require('lspsaga').setup({})
@@ -189,6 +214,43 @@ return {
       'nvim-treesitter/nvim-treesitter', -- optional
       'nvim-tree/nvim-web-devicons',     -- optional
     }
-  }
+  },
+  {
+    "lewis6991/hover.nvim",
+    event = 'LspAttach',
+    config = function()
+      require("hover").setup {
+        init = function()
+          -- Require providers
+          require('hover.providers.diagnostic')
+          require("hover.providers.lsp")
+          -- require('hover.providers.gh')
+          -- require('hover.providers.gh_user')
+          -- require('hover.providers.jira')
+          -- require('hover.providers.dap')
+          -- require('hover.providers.fold_preview')
+          -- require('hover.providers.man')
+          require('hover.providers.dictionary')
+        end,
+        preview_opts = {
+          border = 'single'
+        },
+        -- Whether the contents of a currently open hover window should be moved
+        -- to a :h preview-window when pressing the hover keymap.
+        preview_window = false,
+        title = true,
+      }
 
+      -- Setup keymaps
+      vim.keymap.set("n", "<leader>k", require("hover").hover, { desc = "hover.nvim" })
+      vim.keymap.set("n", "gK", require("hover").hover_select, { desc = "hover.nvim (select)" })
+      vim.keymap.set("n", "<C-p>", function() require("hover").hover_switch("previous") end,
+        { desc = "hover.nvim (previous source)" })
+      vim.keymap.set("n", "<C-n>", function() require("hover").hover_switch("next") end,
+        { desc = "hover.nvim (next source)" })
+    end
+  },
+  {
+    "nvim-telescope/telescope-ui-select.nvim"
+  }
 }

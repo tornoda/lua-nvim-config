@@ -3,7 +3,8 @@ local telescope_builtin = require("telescope.builtin")
 
 -- add yours here
 
-local map          = vim.keymap.set
+local map               = vim.keymap.set
+local del_map           = vim.keymap.del
 
 map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "jk", "<ESC>")
@@ -44,7 +45,7 @@ map("n", "gr", "<cmd>Telescope lsp_references<CR>")
 map("n", "<leader><leader>", "<cmd>Telescope builtin<CR>")
 map("n", "gd", "<cmd>Telescope lsp_definitions<CR>")
 -- search the selection words
-map({"v", "n"}, "<leader>fw", function ()
+map({ "v", "n" }, "<leader>fw", function()
   telescope_builtin.grep_string()
 end)
 
@@ -58,3 +59,7 @@ end)
 -----------gitsigns-------
 map("n", "[c", "<cmd>Gitsigns prev_hunk<CR>")
 map("n", "]c", "<cmd>Gitsigns next_hunk<CR>")
+
+
+
+-----------del mappings-------
