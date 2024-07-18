@@ -1,10 +1,10 @@
 require "nvchad.mappings"
-local telescope_builtin = require("telescope.builtin")
+local telescope_builtin = require "telescope.builtin"
 
 -- add yours here
 
-local map               = vim.keymap.set
-local del_map           = vim.keymap.del
+local map = vim.keymap.set
+local del_map = vim.keymap.del
 
 map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "jk", "<ESC>")
@@ -23,21 +23,11 @@ map("n", "<leader>q", "<cmd>:q<CR>")
 map("n", "<space>", "viw")
 
 -----------lsp-------------
-map("n", "<leader>a", function()
-  vim.lsp.buf.code_action()
-end)
-map("n", "[e", function()
-  vim.diagnostic.goto_prev()
-end)
-map("n", "]e", function()
-  vim.diagnostic.goto_next()
-end)
-map("n", "<leader>fm", function()
-  vim.lsp.buf.format()
-end)
-map("n", "<leader>fe", function()
-  vim.diagnostic.open_float()
-end)
+map({ "n", "v" }, "<leader>a", vim.lsp.buf.code_action)
+map("n", "[e", vim.diagnostic.goto_prev)
+map("n", "]e", vim.diagnostic.goto_next)
+map("n", "<leader>fm", vim.lsp.buf.format)
+map("n", "<leader>fe", vim.diagnostic.open_float)
 
 -----------telescope-------
 map("n", "<leader>b", "<cmd>Telescope buffers<CR>")
@@ -45,9 +35,7 @@ map("n", "gr", "<cmd>Telescope lsp_references<CR>")
 map("n", "<leader><leader>", "<cmd>Telescope builtin<CR>")
 map("n", "gd", "<cmd>Telescope lsp_definitions<CR>")
 -- search the selection words
-map({ "v", "n" }, "<leader>fw", function()
-  telescope_builtin.grep_string()
-end)
+map({ "v", "n" }, "<leader>fw", telescope_builtin.grep_string)
 
 -- vim.api.nvim_create_autocmd('LspAttach', {
 --   callback = function(args)
@@ -59,7 +47,5 @@ end)
 -----------gitsigns-------
 map("n", "[c", "<cmd>Gitsigns prev_hunk<CR>")
 map("n", "]c", "<cmd>Gitsigns next_hunk<CR>")
-
-
 
 -----------del mappings-------

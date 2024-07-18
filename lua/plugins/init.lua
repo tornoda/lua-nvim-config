@@ -5,7 +5,7 @@ return {
   },
   {
     "stevearc/conform.nvim",
-    -- event = 'BufWritePre', -- uncomment for format on save
+    event = "BufWritePre", -- uncomment for format on save
     config = function()
       require "configs.conform"
     end,
@@ -13,14 +13,14 @@ return {
 
   {
     "tpope/vim-surround",
-    event = 'BufEnter',              -- 在lazy.vim下这个必需加上
+    event = "BufEnter", -- 在lazy.vim下这个必需加上
     config = function()
-      vim.g.surround_115 = "**\r**"  -- 115 is the ASCII code for 's'
+      vim.g.surround_115 = "**\r**" -- 115 is the ASCII code for 's'
       vim.g.surround_47 = "/* \r */" -- 47 is /
-    end
+    end,
   },
 
-  { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+  { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
 
   -- These are some examples, uncomment them if you want to see them work!
   -- {
@@ -49,10 +49,10 @@ return {
           show = {
             file = false,
             folder = false,
-            git = false
-          }
-        }
-      }
+            git = false,
+          },
+        },
+      },
     },
     config = function(_, opts)
       require("nvim-tree").setup(opts)
@@ -71,7 +71,7 @@ return {
       telescope.extensions["ui-select"] = {
         require("telescope.themes").get_dropdown {
           -- even more opts
-        }
+        },
 
         -- pseudo code / specification for writing custom displays, like the one
         -- for "codeactions"
@@ -88,10 +88,6 @@ return {
         -- }
       }
 
-
-
-
-
       telescope.setup(opts)
 
       -- load extensions
@@ -106,8 +102,8 @@ return {
     opts = {
       preview = {
         type = "main",
-        scratch = false
-      }
+        scratch = false,
+      },
     },
     keys = {
       {
@@ -148,15 +144,15 @@ return {
     -- dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
 
     config = function()
-      require("text-transform").setup({
+      require("text-transform").setup {
         debug = false,
         keymap = {
           -- Normal mode keymap.
           ["n"] = "<Leader>`",
           -- Visual mode keymap.
           ["v"] = "<Leader>`",
-        }
-      })
+        },
+      }
     end,
   },
   {
@@ -164,22 +160,25 @@ return {
     event = "BufEnter",
     lazy = true,
     config = function()
-      require("diffview").setup({
+      require("diffview").setup {
         file_panel = {
           win_config = { -- See ':h diffview-config-win_config'
             position = "bottom",
             height = 15,
           },
         },
-      })
+      }
     end,
   },
   {
     "williamboman/mason.nvim",
     opts = {
       ensure_installed = {
-        "lua-language-server", "stylua",
-        "html-lsp", "css-lsp", "prettier"
+        "lua-language-server",
+        "stylua",
+        "html-lsp",
+        "css-lsp",
+        "prettier",
       },
     },
   },
@@ -200,40 +199,40 @@ return {
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       -- calling `setup` is optional for customization
-      require("fzf-lua").setup({})
-    end
+      require("fzf-lua").setup {}
+    end,
   },
   {
-    'nvimdev/lspsaga.nvim',
+    "nvimdev/lspsaga.nvim",
     enabled = false,
-    event = 'LspAttach',
+    event = "LspAttach",
     config = function()
-      require('lspsaga').setup({})
+      require("lspsaga").setup {}
     end,
     dependencies = {
-      'nvim-treesitter/nvim-treesitter', -- optional
-      'nvim-tree/nvim-web-devicons',     -- optional
-    }
+      "nvim-treesitter/nvim-treesitter", -- optional
+      "nvim-tree/nvim-web-devicons", -- optional
+    },
   },
   {
     "lewis6991/hover.nvim",
-    event = 'LspAttach',
+    event = "LspAttach",
     config = function()
       require("hover").setup {
         init = function()
           -- Require providers
-          require('hover.providers.diagnostic')
-          require("hover.providers.lsp")
+          require "hover.providers.diagnostic"
+          require "hover.providers.lsp"
           -- require('hover.providers.gh')
           -- require('hover.providers.gh_user')
           -- require('hover.providers.jira')
           -- require('hover.providers.dap')
           -- require('hover.providers.fold_preview')
           -- require('hover.providers.man')
-          require('hover.providers.dictionary')
+          -- require "hover.providers.dictionary"
         end,
         preview_opts = {
-          border = 'single'
+          border = "single",
         },
         -- Whether the contents of a currently open hover window should be moved
         -- to a :h preview-window when pressing the hover keymap.
@@ -244,13 +243,41 @@ return {
       -- Setup keymaps
       vim.keymap.set("n", "<leader>k", require("hover").hover, { desc = "hover.nvim" })
       vim.keymap.set("n", "gK", require("hover").hover_select, { desc = "hover.nvim (select)" })
-      vim.keymap.set("n", "<C-p>", function() require("hover").hover_switch("previous") end,
-        { desc = "hover.nvim (previous source)" })
-      vim.keymap.set("n", "<C-n>", function() require("hover").hover_switch("next") end,
-        { desc = "hover.nvim (next source)" })
-    end
+      vim.keymap.set("n", "<C-p>", function()
+        require("hover").hover_switch "previous"
+      end, { desc = "hover.nvim (previous source)" })
+      vim.keymap.set("n", "<C-n>", function()
+        require("hover").hover_switch "next"
+      end, { desc = "hover.nvim (next source)" })
+    end,
   },
   {
-    "nvim-telescope/telescope-ui-select.nvim"
-  }
+    "nvim-telescope/telescope-ui-select.nvim",
+  },
+  {
+    "Bekaboo/dropbar.nvim",
+    lazy = false,
+    -- optional, but required for fuzzy finder support
+    dependencies = {
+      "nvim-telescope/telescope-fzf-native.nvim",
+    },
+  },
+  {
+    "nvimtools/none-ls.nvim",
+    event = "BufEnter",
+    dependencies = {
+      "nvimtools/none-ls-extras.nvim",
+    },
+    config = function()
+      local null_ls = require "null-ls"
+      null_ls.setup {
+        sources = {
+          null_ls.builtins.formatting.stylua,
+          null_ls.builtins.completion.spell,
+          null_ls.builtins.code_actions.gitsigns,
+          require "none-ls.diagnostics.eslint",
+        },
+      }
+    end,
+  },
 }
