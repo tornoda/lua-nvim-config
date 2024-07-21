@@ -1,19 +1,31 @@
-local cmd = vim.api.nvim_create_user_command
+local create_cmd = vim.api.nvim_create_user_command
 local runCmd = vim.api.nvim_command
 local telescope_builtin = require "telescope.builtin"
 local utils = require "utils"
 
-cmd("DF", function()
+create_cmd("DF", function()
   runCmd "DiffviewOpen"
 end, {})
 
-cmd("DC", function()
+create_cmd("DC", function()
   runCmd "DiffviewClose"
 end, {})
 
-cmd("SearchLive", telescope_builtin.live_grep, {})
+create_cmd("DCA", function()
+  local buffers = vim.api.nvim_list_bufs()
+  for index, bufnr in ipairs(buffers) do
+    local filetype = vim.api.nvim_buf_get_option(bufnr, "filetype")
 
-cmd("Search", function(opts)
+    if string.find(filetype, "Diffview") ~= nil then
+      vim.api.nvim_buf_delete(bufnr, { force = true })
+      utils.log(filetype)
+    end
+  end
+end, {})
+
+create_cmd("SearchLive", telescope_builtin.live_grep, {})
+
+create_cmd("Search", function(opts)
   local _args = utils.get_split_args(opts.args)
 
   local conf = {}

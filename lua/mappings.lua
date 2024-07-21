@@ -48,4 +48,5 @@ map({ "v", "n" }, "<leader>fw", telescope_builtin.grep_string)
 map("n", "[c", "<cmd>Gitsigns prev_hunk<CR>")
 map("n", "]c", "<cmd>Gitsigns next_hunk<CR>")
 
------------del mappings-------
+-----------nvim tree------
+map("n", "<c-n>", "<cmd>NvimTreeToggle<CR>")

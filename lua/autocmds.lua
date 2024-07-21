@@ -42,7 +42,7 @@ autocmd("BufWinEnter", {
 
         trouble.open(buftype)
         trouble.focus()
-      end, 1000)
+      end, 0)
     else
       local set = vim.opt_local
       set.colorcolumn = ""
