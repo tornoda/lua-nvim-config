@@ -1,3 +1,5 @@
+local api = vim.api
+
 local M = {}
 
 M.table_has = function(table, ele)
@@ -33,6 +35,25 @@ end
 
 M.log = function(value)
   print(vim.inspect(value))
+end
+
+M.get_current_word = function()
+  local mode = vim.fn.mode()
+
+  if mode == "n" then
+    return vim.fn.expand "<cword>"
+  end
+
+  if mode == "v" then
+    -- local saved_reg = vim.fn.getreg "v"
+    vim.cmd [[noautocmd sil norm! "vy]]
+    -- set to register v
+    local sele = vim.fn.getreg "v"
+    -- vim.fn.setreg("v", saved_reg)
+    return sele
+  end
+
+  return ""
 end
 
 return M

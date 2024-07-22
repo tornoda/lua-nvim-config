@@ -1,3 +1,4 @@
+local map = vim.keymap.set
 return {
   {
     "folke/which-key.nvim",
@@ -57,6 +58,17 @@ return {
           },
         },
       },
+      on_attach = function(bufnr)
+        local api = require "nvim-tree.api"
+        local function opts(desc)
+          return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+        end
+        -- default mappings
+        api.config.mappings.default_on_attach(bufnr)
+
+        -- custom mappings
+        map("n", "<c-n>", api.tree.toggle, opts "Toggle Tree")
+      end,
     },
     config = function(_, opts)
       require("nvim-tree").setup(opts)
@@ -77,6 +89,8 @@ return {
           -- even more opts
         },
 
+        telescope.setup(opts),
+
         -- pseudo code / specification for writing custom displays, like the one
         -- for "codeactions"
         -- specific_opts = {
@@ -91,8 +105,6 @@ return {
         --   codeactions = false,
         -- }
       }
-
-      telescope.setup(opts)
 
       -- load extensions
       for _, ext in ipairs(opts.extensions_list) do
@@ -282,6 +294,12 @@ return {
           require "none-ls.diagnostics.eslint",
         },
       }
+    end,
+  },
+  {
+    "aznhe21/actions-preview.nvim",
+    config = function()
+      vim.keymap.set({ "v", "n" }, "gf", require("actions-preview").code_actions)
     end,
   },
 }

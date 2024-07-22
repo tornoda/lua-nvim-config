@@ -1,7 +1,6 @@
 require "nvchad.mappings"
 local telescope_builtin = require "telescope.builtin"
-
--- add yours here
+local utils = require "utils"
 
 local map = vim.keymap.set
 local del_map = vim.keymap.del
@@ -43,7 +42,13 @@ map("n", "<leader><leader>", "<cmd>Telescope builtin<CR>")
 map("n", "gd", "<cmd>Telescope lsp_definitions<CR>")
 map("n", "<leader>ic", "<cmd>Telescope lsp_incoming_calls<CR>")
 -- search the selection words
-map({ "v", "n" }, "<leader>fw", telescope_builtin.grep_string)
+map({ "v", "n" }, "<leader>fw", function()
+  local cur_word = utils.get_current_word()
+  telescope_builtin.live_grep {
+    prompt_title = "Grep Search (regex:on case_sensitive:on)",
+    default_text = cur_word,
+  }
+end)
 
 -- vim.api.nvim_create_autocmd('LspAttach', {
 --   callback = function(args)
