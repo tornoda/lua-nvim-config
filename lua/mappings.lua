@@ -21,6 +21,13 @@ map("n", "<leader>6", "6gt")
 
 map("n", "<leader>q", "<cmd>:q<CR>")
 map("n", "<space>", "viw")
+map("n", "<leader>cc", function()
+  local curWord = vim.fn.expand "<cword>"
+  -- local path = vim.fn.expand('<cfile>')
+  local line = vim.fn.line "."
+  local str = "console.log('" .. curWord .. "', " .. curWord .. ")"
+  vim.fn.append(line, str)
+end)
 
 -----------lsp-------------
 map({ "n", "v" }, "<leader>a", vim.lsp.buf.code_action)
@@ -34,6 +41,7 @@ map("n", "<leader>b", "<cmd>Telescope buffers<CR>")
 map("n", "gr", "<cmd>Telescope lsp_references<CR>")
 map("n", "<leader><leader>", "<cmd>Telescope builtin<CR>")
 map("n", "gd", "<cmd>Telescope lsp_definitions<CR>")
+map("n", "<leader>ic", "<cmd>Telescope lsp_incoming_calls<CR>")
 -- search the selection words
 map({ "v", "n" }, "<leader>fw", telescope_builtin.grep_string)
 

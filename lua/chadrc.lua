@@ -5,10 +5,7 @@
 local M = {}
 
 M.ui = {
-  theme = "ashes",
-  tabufline = {
-    enabled = false,
-  },
+	theme = "penumbra_light",
 
   -- hl_override = {
   -- 	Comment = { italic = true },

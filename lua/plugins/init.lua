@@ -44,7 +44,11 @@ return {
     "nvim-tree/nvim-tree.lua",
     cmd = { "NvimTreeToggle", "NvimTreeFocus" },
     opts = {
+      view = {
+        centralize_selection = true,
+      },
       renderer = {
+        full_name = true,
         icons = {
           show = {
             file = false,
