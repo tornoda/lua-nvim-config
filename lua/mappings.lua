@@ -17,6 +17,7 @@ map("n", "<leader>3", "3gt")
 map("n", "<leader>4", "4gt")
 map("n", "<leader>5", "5gt")
 map("n", "<leader>6", "6gt")
+map("v", "p", '"0p', { noremap = true })
 
 map("n", "<leader>q", "<cmd>:q<CR>")
 map("n", "<space>", "viw")
@@ -39,7 +40,7 @@ map("n", "<leader>fe", vim.diagnostic.open_float)
 map("n", "<leader>b", "<cmd>Telescope buffers<CR>")
 map("n", "gr", "<cmd>Telescope lsp_references<CR>")
 map("n", "<leader><leader>", "<cmd>Telescope builtin<CR>")
-map("n", "gd", "<cmd>Telescope lsp_definitions<CR>")
+-- map("n", "gd", "<cmd>Telescope lsp_definitions<CR>", { noremap = true })
 map("n", "<leader>ic", "<cmd>Telescope lsp_incoming_calls<CR>")
 -- search the selection words
 map({ "v", "n" }, "<leader>fw", function()
@@ -50,12 +51,18 @@ map({ "v", "n" }, "<leader>fw", function()
   }
 end)
 
--- vim.api.nvim_create_autocmd('LspAttach', {
---   callback = function(args)
---     vim.keymap.del('n', 'gd', { buffer = args.buf })
---     map("n", "gd", "<cmd>Telescope lsp_definitions<CR>")
---   end,
--- })
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function(args)
+    local function setGd()
+      vim.keymap.del("n", "gd", { buffer = args.buf })
+      map("n", "gd", "<cmd>Telescope lsp_definitions<CR>")
+    end
+
+    vim.defer_fn(function()
+      pcall(setGd)
+    end, 0)
+  end,
+})
 
 -----------gitsigns-------
 map("n", "[c", "<cmd>Gitsigns prev_hunk<CR>")

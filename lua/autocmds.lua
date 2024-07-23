@@ -92,6 +92,7 @@ function SetColors()
   -- )
   -- require("base46").load_all_highlights()
 end
+
 autocmd({ "FileType", "BufWinEnter" }, {
   callback = function()
     local ret = vim.bo.filetype
