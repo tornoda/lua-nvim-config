@@ -77,34 +77,15 @@ return {
   {
     "nvim-telescope/telescope.nvim",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
-    cmd = "Telescope",
+    lazy = false,
+    priority = 50,
     opts = function()
       return require "configs.telescope"
     end,
     config = function(_, opts)
       local telescope = require "telescope"
 
-      telescope.extensions["ui-select"] = {
-        require("telescope.themes").get_dropdown {
-          -- even more opts
-        },
-
-        telescope.setup(opts),
-
-        -- pseudo code / specification for writing custom displays, like the one
-        -- for "codeactions"
-        -- specific_opts = {
-        --   [kind] = {
-        --     make_indexed = function(items) -> indexed_items, width,
-        --     make_displayer = function(widths) -> displayer
-        --     make_display = function(displayer) -> function(e)
-        --     make_ordinal = function(e) -> string
-        --   },
-        --   -- for example to disable the custom builtin "codeactions" display
-        --      do the following
-        --   codeactions = false,
-        -- }
-      }
+      telescope.setup(opts)
 
       -- load extensions
       for _, ext in ipairs(opts.extensions_list) do
@@ -157,17 +138,21 @@ return {
   { -- 快速修改变量命名风格
     "chenasraf/text-transform.nvim",
     tag = "stable",
-    -- dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
-
+    lazy = false,
+    priority = 60,
+    dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
     config = function()
       require("text-transform").setup {
         debug = false,
         keymap = {
-          -- Normal mode keymap.
-          ["n"] = "<Leader>`",
-          -- Visual mode keymap.
-          ["v"] = "<Leader>`",
+          telescope_popup = {
+            -- Normal mode keymap.
+            ["n"] = "<leader>`",
+            -- Visual mode keymap.
+            ["v"] = "<leader>`",
+          },
         },
+        popup_type = "telescope",
       }
     end,
   },
