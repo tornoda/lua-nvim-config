@@ -1,4 +1,6 @@
+local mappings = require "mappings"
 local map = vim.keymap.set
+
 return {
   {
     "folke/which-key.nvim",
@@ -24,16 +26,17 @@ return {
   { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
 
   -- These are some examples, uncomment them if you want to see them work!
-  -- {
-  --   "lewis6991/gitsigns.nvim",
-  --   event = "User FilePost",
-  --   opts = function()
-  --     return require "nvchad.configs.gitsigns"
-  --   end,
-  --   config = function(_, opts)
-  --     require("gitsigns").setup(opts)
-  --   end,
-  -- },
+  {
+    "lewis6991/gitsigns.nvim",
+    event = "User FilePost",
+    opts = function()
+      return require "nvchad.configs.gitsigns"
+    end,
+    config = function(_, opts)
+      require("gitsigns").setup(opts)
+      mappings.gitsigns()
+    end,
+  },
   {
     "neovim/nvim-lspconfig",
     config = function()
@@ -77,8 +80,7 @@ return {
   {
     "nvim-telescope/telescope.nvim",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
-    lazy = false,
-    priority = 50,
+    cmd = { "Telescope" },
     opts = function()
       return require "configs.telescope"
     end,
@@ -91,6 +93,8 @@ return {
       for _, ext in ipairs(opts.extensions_list) do
         telescope.load_extension(ext)
       end
+
+      mappings.lsp()
     end,
   },
   {
@@ -218,6 +222,7 @@ return {
   {
     "lewis6991/hover.nvim",
     event = "LspAttach",
+    enabled = false,
     config = function()
       require("hover").setup {
         init = function()
