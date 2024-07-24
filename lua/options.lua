@@ -1,5 +1,7 @@
 require "nvchad.options"
 
+-- text
+
 -- add yours here!
 
 local o = vim.o
@@ -12,3 +14,5 @@ vim.opt.autoindent = false
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
   virtual_text = false,
 })
+
+vim.api.nvim_set_hl(0, "TelescopePreviewLine", { underline = true, bold = true })
