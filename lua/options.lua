@@ -1,4 +1,5 @@
 require "nvchad.options"
+local utils = require "utils"
 
 -- text
 

@@ -94,7 +94,7 @@ return {
         telescope.load_extension(ext)
       end
 
-      mappings.lsp()
+      mappings.telescope()
     end,
   },
   {
@@ -105,39 +105,13 @@ return {
         type = "main",
         scratch = false,
       },
+      focus = true,
+      follow = false,
     },
-    keys = {
-      {
-        "<leader>xx",
-        "<cmd>Trouble diagnostics toggle<cr>",
-        desc = "Diagnostics (Trouble)",
-      },
-      {
-        "<leader>xX",
-        "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-        desc = "Buffer Diagnostics (Trouble)",
-      },
-      {
-        "<leader>cs",
-        "<cmd>Trouble symbols toggle focus=false<cr>",
-        desc = "Symbols (Trouble)",
-      },
-      {
-        "<leader>cl",
-        "<cmd>Trouble lsp toggle focus=false<cr>",
-        desc = "LSP Definitions / references / ... (Trouble)",
-      },
-      {
-        "<leader>xL",
-        "<cmd>Trouble loclist toggle<cr>",
-        desc = "Location List (Trouble)",
-      },
-      {
-        "<leader>xQ",
-        "<cmd>Trouble qflist toggle<cr>",
-        desc = "Quickfix List (Trouble)",
-      },
-    },
+    config = function(_, opts)
+      require("trouble").setup(opts)
+      mappings.trouble()
+    end,
   },
   { -- 快速修改变量命名风格
     "chenasraf/text-transform.nvim",
@@ -188,15 +162,22 @@ return {
     },
   },
   --
-  -- {
-  -- 	"nvim-treesitter/nvim-treesitter",
-  -- 	opts = {
-  -- 		ensure_installed = {
-  -- 			"vim", "lua", "vimdoc",
-  --      "html", "css"
-  -- 		},
-  -- 	},
-  -- },
+  {
+    "nvim-treesitter/nvim-treesitter",
+    opts = {
+      ensure_installed = {
+        "vim",
+        "lua",
+        "vimdoc",
+        "html",
+        "css",
+        "scss",
+        "javascript",
+        "typescript",
+        "tsx",
+      },
+    },
+  },
   {
     "ibhagwan/fzf-lua",
     enabled = false,
@@ -290,6 +271,12 @@ return {
     "aznhe21/actions-preview.nvim",
     config = function()
       vim.keymap.set({ "v", "n" }, "gf", require("actions-preview").code_actions)
+    end,
+  },
+  {
+    "nvim-pack/nvim-spectre",
+    config = function()
+      require("spectre").setup {}
     end,
   },
 }

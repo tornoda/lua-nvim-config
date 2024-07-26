@@ -1,4 +1,5 @@
 local autocmd = vim.api.nvim_create_autocmd
+local utils = require "utils"
 
 autocmd({ "FileType", "BufWinEnter" }, {
   callback = function()
@@ -24,6 +25,11 @@ autocmd({ "FileType", "BufWinEnter" }, {
 --   end,
 -- })
 
+-- vim.api.nvim_create_autocmd("QuickFixCmdPost", {
+--   callback = function()
+--     vim.cmd([[Trouble qflist open]])
+--   end,
+-- })
 autocmd("BufWinEnter", {
   pattern = "quickfix",
   -- https://github.com/folke/trouble.nvim/issues/70
@@ -93,6 +99,18 @@ function SetColors()
   -- require("base46").load_all_highlights()
 end
 
+function SetColor2()
+  local diff_add = (utils.get_color("DiffAdd", "fg#"))
+  local diff_text = (utils.get_color("DiffText", "fg#"))
+  local diff_delete = (utils.get_color("DiffDelete", "fg#"))
+  local diff_change = (utils.get_color("DiffChange", "fg#"))
+  print(diff_add)
+
+  vim.api.nvim_set_hl(0, "DiffAdd", { bg = diff_add, fg = nil })
+  vim.api.nvim_set_hl(0, "DiffDelete", { bg = diff_delete, fg = nil })
+  vim.api.nvim_set_hl(0, "DiffChange", { bg = diff_change, fg = nil })
+end
+
 autocmd({ "FileType", "BufWinEnter" }, {
   callback = function()
     local ret = vim.bo.filetype
@@ -100,6 +118,7 @@ autocmd({ "FileType", "BufWinEnter" }, {
       return nil
     end
 
+    -- SetColor2()
     SetColors()
   end,
 })

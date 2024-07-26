@@ -1,4 +1,5 @@
 local api = vim.api
+local fn = vim.fn
 
 local M = {}
 
@@ -54,6 +55,10 @@ M.get_current_word = function()
   end
 
   return ""
+end
+
+M.get_color = function(group, attr)
+  return fn.synIDattr(fn.synIDtrans(fn.hlID(group)), attr)
 end
 
 return M

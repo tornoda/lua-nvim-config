@@ -8,7 +8,8 @@ local del_map = vim.keymap.del
 local M = {}
 
 M.default = function()
-  map("n", ";", ":", { desc = "CMD enter command mode" })
+  -- map("n", ";", ":", { desc = "CMD enter command mode" })
+  map({ "n", "v", "i" }, "<leader>q", "<cmd>bd!<CR>")
   map("i", "jk", "<ESC>")
   -- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")
   map("n", "<leader>i", "<cmd> set ignorecase!<CR>")
@@ -35,7 +36,8 @@ M.telescope = function()
   map("n", "<leader>b", "<cmd>Telescope buffers<CR>")
   map("n", "gr", "<cmd>Telescope lsp_references<CR>")
   map("n", "<leader><leader>", "<cmd>Telescope builtin<CR>")
-  -- map("n", "gd", "<cmd>Telescope lsp_definitions<CR>", { noremap = true })
+  map("n", "<leader>jl", "<cmd>Telescope jumplist<CR>")
+  map("n", "<leader>gs", "<cmd>Telescope git_status<CR>")
   map("n", "<leader>ic", "<cmd>Telescope lsp_incoming_calls<CR>")
   -- search the selection words
   map({ "v", "n" }, "<leader>fw", function()
@@ -47,21 +49,52 @@ M.telescope = function()
   end)
 end
 
+M.trouble = function()
+  map({ "n", "v" }, "<leader>tc", function()
+    require("trouble").close()
+  end)
+  map({ "n", "v" }, "<leader>tf", function()
+    require("trouble").focus()
+  end)
+  -- keys = {--   {
+  --     "<leader>xx",
+  --     "<cmd>Trouble diagnostics toggle<cr>",
+  --     desc = "Diagnostics (Trouble)",
+  --   },
+  --   {
+  --     "<leader>xX",
+  --     "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+  --     desc = "Buffer Diagnostics (Trouble)",
+  --   },
+  --   {
+  --     "<leader>cs",
+  --     "<cmd>Trouble symbols toggle focus=false<cr>",
+  --     desc = "Symbols (Trouble)",
+  --   },
+  --   {
+  --     "<leader>cl",
+  --     "<cmd>Trouble lsp toggle focus=false<cr>",
+  --     desc = "LSP Definitions / references / ... (Trouble)",
+  --   },
+  --   {
+  --     "<leader>xL",
+  --     "<cmd>Trouble loclist toggle<cr>",
+  --     desc = "Location List (Trouble)",
+  --   },
+  --   {
+  --     "<leader>xQ",
+  --     "<cmd>Trouble qflist toggle<cr>",
+  --     desc = "Quickfix List (Trouble)",
+  --   },
+  -- },
+end
+
 M.lsp = function()
   map({ "n", "v" }, "<leader>a", vim.lsp.buf.code_action)
   map("n", "[e", vim.diagnostic.goto_prev)
   map("n", "]e", vim.diagnostic.goto_next)
   map("n", "<leader>fm", vim.lsp.buf.format)
   map("n", "<leader>fe", vim.diagnostic.open_float)
-
-  local function setGd()
-    vim.keymap.del("n", "gd", { buffer = args.buf })
-    map("n", "gd", "<cmd>Telescope lsp_definitions<CR>")
-  end
-
-  vim.defer_fn(function()
-    pcall(setGd)
-  end, 0)
 end
 
 M.gitsigns = function()
@@ -71,9 +104,17 @@ end
 
 ------ register mapping -------
 M.default()
+M.lsp()
+
 vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(args)
-    M.lsp()
+    vim.defer_fn(function()
+      pcall(function()
+        vim.keymap.del("n", "gd", { buffer = args.buf })
+        map("n", "gd", "<cmd>Telescope lsp_definitions<CR>")
+        -- map("n", "gd", "<cmd>Trouble lsp_definitions<CR>")
+      end)
+    end, 0)
   end,
 })
 
