@@ -8,11 +8,11 @@ local del_map = vim.keymap.del
 local M = {}
 
 M.default = function()
-  -- map("n", ";", ":", { desc = "CMD enter command mode" })
-  map({ "n", "v", "i" }, "<leader>q", "<cmd>bd!<CR>")
-  map("i", "jk", "<ESC>")
+  -- -- map("n", ";", ":", { desc = "CMD enter command mode" })
   -- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")
-  map("n", "<leader>i", "<cmd> set ignorecase!<CR>")
+  map({ "n", "v" }, "<leader>q", "<cmd>q<CR>")
+  map("i", ";q", "<ESC>")
+  map({ "n", "i", "v" }, "<leader>w", "<cmd> w <cr>")
   map("n", "<leader>1", "1gt")
   map("n", "<leader>2", "2gt")
   map("n", "<leader>3", "3gt")
@@ -20,7 +20,6 @@ M.default = function()
   map("n", "<leader>5", "5gt")
   map("n", "<leader>6", "6gt")
   map("v", "p", '"0p', { noremap = true })
-  map("n", "<leader>q", "<cmd>:q<CR>")
   map("n", "<space>", "viw")
 
   map("n", "<leader>cc", function()
@@ -30,6 +29,12 @@ M.default = function()
     local str = "console.log('" .. curWord .. "', " .. curWord .. ")"
     vim.fn.append(line, str)
   end)
+  map({ "n", "v" }, "<leader>*", function()
+    local curWord = utils.get_current_word()
+    local cmd_str = "match IncSearch /\\<" .. curWord .. "\\>/"
+    vim.api.nvim_command(cmd_str)
+  end)
+  map({ "n", "v" }, "*", "*N", { silent = true })
 end
 
 M.telescope = function()
@@ -42,9 +47,13 @@ M.telescope = function()
   -- search the selection words
   map({ "v", "n" }, "<leader>fw", function()
     local cur_word = utils.get_current_word()
+    local _ret = string.find(cur_word, "[a-zA-Z_]+")
+    local hasPre = _ret == 1
+    local default_text = hasPre and "\\b" .. cur_word .. "\\b" or ""
+
     telescope_builtin.live_grep {
       prompt_title = "Grep Search (regex:on case_sensitive:on)",
-      default_text = cur_word,
+      default_text = default_text,
     }
   end)
 end
@@ -95,6 +104,15 @@ M.lsp = function()
   map("n", "]e", vim.diagnostic.goto_next)
   map("n", "<leader>fm", vim.lsp.buf.format)
   map("n", "<leader>fe", vim.diagnostic.open_float)
+
+  local function setGd()
+    vim.keymap.del("n", "gd", { buffer = args.buf })
+    map("n", "gd", "<cmd>Telescope lsp_definitions<CR>")
+  end
+
+  -- vim.defer_fn(function()
+  --   pcall(setGd)
+  -- end, 0)
 end
 
 M.gitsigns = function()

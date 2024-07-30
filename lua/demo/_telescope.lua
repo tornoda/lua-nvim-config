@@ -7,9 +7,6 @@ local conf = require("telescope.config").values
 -- our picker function: colors
 local colors = function(opts)
   opts = opts or {}
-
-  print(vim.inspect(opts))
-
   opts.layout_strategy = "vertical"
 
   pickers

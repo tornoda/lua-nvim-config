@@ -4,7 +4,7 @@ local map = vim.keymap.set
 return {
   {
     "folke/which-key.nvim",
-    enabled = false,
+    -- enabled = false,
   },
   {
     "stevearc/conform.nvim",

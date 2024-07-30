@@ -1,3 +1,4 @@
+local func = require "func"
 local autocmd = vim.api.nvim_create_autocmd
 local utils = require "utils"
 
@@ -59,74 +60,43 @@ autocmd("BufWinEnter", {
   end,
 })
 
--- NvimTree
--- autocmd('BufEnter', {
---   pattern = "NvimTree",
---   callback = function()
---     print('h')
---     vim.api.nvim_create_user_command('Search_under_dir', function()
---       print('hello')
---     end, {})
---   end
--- })
---https://github.com/NvChad/extensions/pull/35
-
---  global function
---  `:lua SetColors()` to call
-function SetColors()
-  -- package.loaded['chadrc'] = nil
-  -- local themeName = vim.g.nvchad_theme
-  local themeName = require("chadrc").ui.theme or ""
-
-  if string.find(themeName, "light") ~= nil then
-    vim.api.nvim_set_hl(0, "DiffAdd", { bg = "#d7eed8", fg = nil })
-    vim.api.nvim_set_hl(0, "DiffDelete", { fg = "#ffbebe" })
-    vim.api.nvim_set_hl(0, "DiffText", { bg = "#a6daa9", fg = nil })
-    vim.api.nvim_set_hl(0, "DiffChange", { bg = "#def1df", fg = nil })
-  else
-    vim.api.nvim_set_hl(0, "DiffAdd", { bg = "#295337", fg = nil })
-    vim.api.nvim_set_hl(0, "DiffDelete", { bg = "brown", fg = "brown" })
-    vim.api.nvim_set_hl(0, "DiffText", { bg = "#157d38", fg = nil })
-    vim.api.nvim_set_hl(0, "DiffChange", { bg = "#295337" })
-  end
-
-  vim.cmd "set fillchars+=diff:╱"
-  -- require("gitsigns").refresh()
-  -- print(
-  --   ("A new %s was opened on tab page %d!")
-  --     :format(view.class:name(), view.tabpage)
-  -- )
-  -- require("base46").load_all_highlights()
-end
-
-function SetColor2()
-  local diff_add = (utils.get_color("DiffAdd", "fg#"))
-  local diff_text = (utils.get_color("DiffText", "fg#"))
-  local diff_delete = (utils.get_color("DiffDelete", "fg#"))
-  local diff_change = (utils.get_color("DiffChange", "fg#"))
-  print(diff_add)
-
-  vim.api.nvim_set_hl(0, "DiffAdd", { bg = diff_add, fg = nil })
-  vim.api.nvim_set_hl(0, "DiffDelete", { bg = diff_delete, fg = nil })
-  vim.api.nvim_set_hl(0, "DiffChange", { bg = diff_change, fg = nil })
-end
-
-autocmd({ "FileType", "BufWinEnter" }, {
+autocmd({ "FileType", "BufWinEnter", "BufEnter" }, {
   callback = function()
     local ret = vim.bo.filetype
-    if ret ~= "DiffviewFiles" then
-      return nil
+    if string.find(ret, "Diffview") ~= nil then
+      func.setColor()
     end
-
-    -- SetColor2()
-    SetColors()
   end,
 })
 
--- autocmd('CursorHold',
---   {
---     callback = function()
---       print('CursorHold')
---     end
---   }
--- )
+autocmd({ "BufEnter", "BufLeave" }, {
+  callback = function()
+    local is_trouble_open = require("trouble").is_open()
+    local filetype = vim.bo.filetype
+
+    if is_trouble_open and filetype == "trouble" then
+      vim.api.nvim_set_hl(0, "CursorLine", { underline = true, bold = true })
+    else
+      vim.api.nvim_set_hl(0, "CursorLine", { underline = false, bold = false })
+    end
+  end,
+})
+
+autocmd("BufHidden", {
+  callback = function()
+    local is_trouble_open = require("trouble").is_open()
+  end,
+})
+
+autocmd("CursorHold", {
+  callback = function()
+    local function set_underline()
+      -- vim.api.nvim_command "Gitsigns blame_line"
+      local curWord = utils.get_current_word()
+      local cmd_str = "match Underlined /\\<" .. curWord .. "\\>/"
+      vim.api.nvim_command(cmd_str)
+    end
+
+    vim.defer_fn(set_underline, 0)
+  end,
+})

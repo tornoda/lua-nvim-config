@@ -16,4 +16,8 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagn
   virtual_text = false,
 })
 
+vim.opt.updatetime = 500
+
+vim.cmd "set fillchars+=diff:╱"
+
 vim.api.nvim_set_hl(0, "TelescopePreviewLine", { underline = true, bold = true })
