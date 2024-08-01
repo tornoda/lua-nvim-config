@@ -33,5 +33,6 @@
   "text-transform.nvim": { "branch": "master", "commit": "335b3ad36d8b276b7b56028108d32b1c91f26d76" },
   "trouble.nvim": { "branch": "main", "commit": "bf99ea71a39e322336b7f8be965f86dbf5c65540" },
   "ui": { "branch": "v2.5", "commit": "e03c638950dbc31fa0dd65c3b56495976d8420a4" },
-  "vim-surround": { "branch": "master", "commit": "3d188ed2113431cf8dac77be61b842acb64433d9" }
+  "vim-surround": { "branch": "master", "commit": "3d188ed2113431cf8dac77be61b842acb64433d9" },
+  "which-key.nvim": { "branch": "main", "commit": "0099511294f16b81c696004fa6a403b0ae61f7a0" }
 }

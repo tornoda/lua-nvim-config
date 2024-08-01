@@ -88,15 +88,15 @@ autocmd("BufHidden", {
   end,
 })
 
-autocmd("CursorHold", {
-  callback = function()
-    local function set_underline()
-      -- vim.api.nvim_command "Gitsigns blame_line"
-      local curWord = utils.get_current_word()
-      local cmd_str = "match Underlined /\\<" .. curWord .. "\\>/"
-      vim.api.nvim_command(cmd_str)
-    end
-
-    vim.defer_fn(set_underline, 0)
-  end,
-})
+-- autocmd("CursorHold", {
+--   callback = function()
+--     local function set_underline()
+--       -- vim.api.nvim_command "Gitsigns blame_line"
+--       local curWord = utils.get_current_word()
+--       local cmd_str = "match Underlined /\\<" .. curWord .. "\\>/"
+--       vim.api.nvim_command(cmd_str)
+--     end
+--
+--     vim.defer_fn(set_underline, 0)
+--   end,
+-- })
