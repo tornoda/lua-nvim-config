@@ -13,7 +13,6 @@ return {
       require "configs.conform"
     end,
   },
-
   {
     "tpope/vim-surround",
     event = "BufEnter", -- 在lazy.vim下这个必需加上
@@ -24,8 +23,6 @@ return {
   },
 
   { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-
-  -- These are some examples, uncomment them if you want to see them work!
   {
     "lewis6991/gitsigns.nvim",
     event = "User FilePost",
@@ -113,39 +110,23 @@ return {
       mappings.trouble()
     end,
   },
-  { -- 快速修改变量命名风格
-    "chenasraf/text-transform.nvim",
-    tag = "stable",
-    lazy = false,
-    priority = 60,
-    dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
-    config = function()
-      require("text-transform").setup {
-        debug = false,
-        keymap = {
-          telescope_popup = {
-            -- Normal mode keymap.
-            ["n"] = "<leader>`",
-            -- Visual mode keymap.
-            ["v"] = "<leader>`",
-          },
-        },
-        popup_type = "telescope",
-      }
-    end,
-  },
   {
     "sindrets/diffview.nvim",
     event = "BufEnter",
     lazy = true,
     config = function()
       require("diffview").setup {
+        enhanced_diff_hl = false,
         file_panel = {
           win_config = { -- See ':h diffview-config-win_config'
             position = "bottom",
             height = 15,
           },
         },
+        -- hooks = {
+        --   view_opened = function()
+        --   end,
+        -- },
       }
     end,
   },
@@ -176,28 +157,6 @@ return {
         "typescript",
         "tsx",
       },
-    },
-  },
-  {
-    "ibhagwan/fzf-lua",
-    enabled = false,
-    -- optional for icon support
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    config = function()
-      -- calling `setup` is optional for customization
-      require("fzf-lua").setup {}
-    end,
-  },
-  {
-    "nvimdev/lspsaga.nvim",
-    enabled = false,
-    event = "LspAttach",
-    config = function()
-      require("lspsaga").setup {}
-    end,
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter", -- optional
-      "nvim-tree/nvim-web-devicons", -- optional
     },
   },
   {
@@ -268,8 +227,8 @@ return {
     end,
   },
   {
-    enabled = false,
     "aznhe21/actions-preview.nvim",
+    enabled = false,
     config = function()
       vim.keymap.set({ "v", "n" }, "gf", require("actions-preview").code_actions)
     end,
@@ -279,5 +238,38 @@ return {
     config = function()
       require("spectre").setup {}
     end,
+  },
+  {
+    "dnlhc/glance.nvim",
+    enabled = false,
+    config = function()
+      require("glance").setup {
+        -- your configuration
+      }
+    end,
+  },
+  {
+    "johmsalas/text-case.nvim",
+    dependencies = { "nvim-telescope/telescope.nvim" },
+    config = function()
+      require("textcase").setup {}
+      require("telescope").load_extension "textcase"
+    end,
+    keys = {
+      "ga", -- Default invocation prefix
+      { "ga.", "<cmd>TextCaseOpenTelescope<CR>", mode = { "n", "x" }, desc = "Telescope" },
+    },
+    cmd = {
+      -- NOTE: The Subs command name can be customized via the option "substitude_command_name"
+      "Subs",
+      "TextCaseOpenTelescope",
+      "TextCaseOpenTelescopeQuickChange",
+      "TextCaseOpenTelescopeLSPChange",
+      "TextCaseStartReplacingCommand",
+    },
+    -- If you want to use the interactive feature of the `Subs` command right away, text-case.nvim
+    -- has to be loaded on startup. Otherwise, the interactive feature of the `Subs` will only be
+    -- available after the first executing of it or after a keymap of text-case.nvim has been used.
+    lazy = false,
   },
 }

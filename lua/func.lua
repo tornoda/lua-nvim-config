@@ -1,5 +1,19 @@
 local M = {}
 
+-- vim.ui.select({ "tabs", "spaces" }, {
+--   prompt = "Select tabs or spaces:",
+--   format_item = function(item)
+--     return "I'd like to choose " .. item
+--   end,
+-- }, function(choice)
+--   if choice == "spaces" then
+--     vim.o.expandtab = true
+--   else
+--     vim.o.expandtab = false
+--   end
+-- end)
+
+-- Make it better to use. see: https://github.com/sindrets/diffview.nvim/issues/241
 M.setColor = function()
   local themeName = dofile("lua/chadrc.lua").ui.theme
 
@@ -10,13 +24,9 @@ M.setColor = function()
     vim.api.nvim_set_hl(0, "DiffChange", { bg = "#def1df", fg = nil })
   else
     vim.api.nvim_set_hl(0, "DiffChange", { link = "DiffAdd" })
-    -- vim.api.nvim_set_hl(0, "DiffAdd", { bg = "#295337", fg = nil })
-    -- vim.api.nvim_set_hl(0, "DiffDelete", { bg = "brown", fg = "brown" })
-    -- vim.api.nvim_set_hl(0, "DiffText", { bg = "#157d38", fg = nil })
-    -- vim.api.nvim_set_hl(0, "DiffChange", { bg = "#295337" })
-
-    vim.api.nvim_set_hl(0, "DiffAdd", { bg = "#002716", fg = nil })
-    vim.api.nvim_set_hl(0, "DiffText", { bg = "#001F12" })
+    vim.api.nvim_set_hl(0, "DiffAdd", { bg = "#3b643b", fg = nil })
+    vim.api.nvim_set_hl(0, "DiffDelete", { bg = nil, fg = "#c7ae95" })
+    vim.api.nvim_set_hl(0, "DiffText", { bg = "#457947", fg = nil })
   end
 
   --  require("gitsigns").refresh()
