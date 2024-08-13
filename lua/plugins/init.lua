@@ -60,14 +60,10 @@ return {
       },
       on_attach = function(bufnr)
         local api = require "nvim-tree.api"
-        local function opts(desc)
-          return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
-        end
         -- default mappings
         api.config.mappings.default_on_attach(bufnr)
 
-        -- custom mappings
-        map("n", "<c-n>", api.tree.toggle, opts "Toggle Tree")
+        mappings.nvimtree(bufnr)
       end,
     },
     config = function(_, opts)
@@ -118,6 +114,7 @@ return {
       require("diffview").setup {
         enhanced_diff_hl = false,
         file_panel = {
+          listing_style = "list",
           win_config = { -- See ':h diffview-config-win_config'
             position = "bottom",
             height = 15,

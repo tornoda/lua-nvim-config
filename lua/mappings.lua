@@ -2,37 +2,10 @@ local telescope_builtin = require "telescope.builtin"
 local utils = require "utils"
 
 local map = vim.keymap.set
-local del_map = vim.keymap.del
 
-map("n", "<leader>fm", function()
-  require("conform").format { lsp_fallback = true }
-end, { desc = "format files" })
-
--- global lsp mappings
-map("n", "<leader>ds", vim.diagnostic.setloclist, { desc = "lsp diagnostic loclist" })
-
--- tabufline
-map("n", "<leader>b", "<cmd>enew<CR>", { desc = "buffer new" })
-
-map("n", "<tab>", function()
-  require("nvchad.tabufline").next()
-end, { desc = "buffer goto next" })
-
-map("n", "<S-tab>", function()
-  require("nvchad.tabufline").prev()
-end, { desc = "buffer goto prev" })
-
-map("n", "<leader>x", function()
-  require("nvchad.tabufline").close_buffer()
-end, { desc = "buffer close" })
-
--- Comment
-map("n", "<leader>/", "gcc", { desc = "comment toggle", remap = true })
-map("v", "<leader>/", "gc", { desc = "comment toggle", remap = true })
-
--- nvimtree
-map("n", "<C-n>", "<cmd>NvimTreeToggle<CR>", { desc = "nvimtree toggle window" })
-map("n", "<leader>e", "<cmd>NvimTreeFocus<CR>", { desc = "nvimtree focus window" })
+-- map("n", "<leader>x", function()
+--   require("nvchad.tabufline").close_buffer()
+-- end, { desc = "buffer close" })
 
 -- telescope
 
@@ -89,6 +62,10 @@ local M = {}
 M.default = function()
   -- -- map("n", ";", ":", { desc = "CMD enter command mode" })
   -- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")
+  -- Comment
+  map("n", "<leader>/", "gcc", { desc = "comment toggle", remap = true })
+  map("v", "<leader>/", "gc", { desc = "comment toggle", remap = true })
+
   map({ "n", "v" }, "<leader>q", "<cmd>q<CR>")
   map("i", ";q", "<ESC>")
   map({ "n", "i", "v" }, "<leader>w", "<cmd> w <cr>")
@@ -134,15 +111,31 @@ M.default = function()
   map("n", "<leader>n", "<cmd>set nu!<CR>", { desc = "toggle line number" })
   map("n", "<leader>rn", "<cmd>set rnu!<CR>", { desc = "toggle relative number" })
   map("n", "<leader>ch", "<cmd>NvCheatsheet<CR>", { desc = "toggle nvcheatsheet" })
+
+  map("n", "<leader>fm", function()
+    require("conform").format { lsp_fallback = true }
+  end, { desc = "format files" })
+
+  map("n", "<C-n>", "<cmd>NvimTreeToggle<CR>", { desc = "nvimtree toggle window" })
+  map("n", "<leader>e", "<cmd>NvimTreeFocus<CR>", { desc = "nvimtree focus window" })
+
+  map("n", "<tab>", function()
+    require("nvchad.tabufline").next()
+  end, { desc = "buffer goto next" })
+
+  map("n", "<S-tab>", function()
+    require("nvchad.tabufline").prev()
+  end, { desc = "buffer goto prev" })
+end
+
+M.nvimtree = function(bufnr)
+  local function opts(desc)
+    return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+  end
 end
 
 M.telescope = function()
   map("n", "<leader>b", "<cmd>Telescope buffers<CR>")
-  map("n", "gr", "<cmd>Telescope lsp_references<CR>")
-  map("n", "<leader><leader>", "<cmd>Telescope builtin<CR>")
-  map("n", "<leader>jl", "<cmd>Telescope jumplist<CR>")
-  map("n", "<leader>gs", "<cmd>Telescope git_status<CR>")
-  map("n", "<leader>ic", "<cmd>Telescope lsp_incoming_calls<CR>")
   -- search the selection words
   map({ "v", "n" }, "<leader>fw", function()
     local cur_word = utils.get_current_word()
@@ -174,6 +167,7 @@ M.telescope = function()
 end
 
 M.trouble = function()
+  map({ "n", "v" }, "<leader>tt", "<cmd>Trouble<cr>")
   map({ "n", "v" }, "<leader>tc", function()
     require("trouble").close()
   end)
@@ -213,20 +207,39 @@ M.trouble = function()
   -- },
 end
 
-M.lsp = function()
+M.lsp = function(bufnr)
+  local function opts(desc)
+    return { buffer = bufnr, desc = "LSP " .. desc }
+  end
+
+  map("n", "<leader><leader>", "<cmd>Telescope builtin<CR>")
+  map("n", "<leader>jl", "<cmd>Telescope jumplist<CR>")
+  map("n", "<leader>gs", "<cmd>Telescope git_status<CR>")
+  map("n", "<leader>ic", "<cmd>Telescope lsp_incoming_calls<CR>")
+
+  -- map("n", "gd", vim.lsp.buf.definition, opts "Go to definition")
+  map("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts "Go to definition")
+  -- map("n", "gd", "<cmd>Trouble lsp_definitions<CR>")
+  map("n", "gri", vim.lsp.buf.implementation, opts "Go to implementation")
+  map("n", "grr", vim.lsp.buf.references, opts "Show references")
+  map("n", "grn", function()
+    require "nvchad.lsp.renamer"()
+  end, opts "NvRenamer")
+  map("n", "grd", vim.lsp.buf.type_definition, opts "Go to type definition")
+  map("n", "gD", vim.lsp.buf.declaration, opts "Go to declaration")
+
+  map("n", "<leader>sh", vim.lsp.buf.signature_help, opts "Show signature help")
+  map("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, opts "Add workspace folder")
+  map("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder, opts "Remove workspace folder")
+
+  map("n", "<leader>wl", function()
+    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+  end, opts "List workspace folders")
+
   map({ "n", "v" }, "<leader>a", vim.lsp.buf.code_action)
   map("n", "[e", vim.diagnostic.goto_prev)
   map("n", "]e", vim.diagnostic.goto_next)
   map("n", "<leader>fe", vim.diagnostic.open_float)
-
-  local function setGd()
-    vim.keymap.del("n", "gd", { buffer = args.buf })
-    map("n", "gd", "<cmd>Telescope lsp_definitions<CR>")
-  end
-
-  -- vim.defer_fn(function()
-  --   pcall(setGd)
-  -- end, 0)
 end
 
 M.gitsigns = function()
@@ -237,17 +250,5 @@ end
 ------ register mapping -------
 M.default()
 M.lsp()
-
-vim.api.nvim_create_autocmd("LspAttach", {
-  callback = function(args)
-    vim.defer_fn(function()
-      pcall(function()
-        vim.keymap.del("n", "gd", { buffer = args.buf })
-        map("n", "gd", "<cmd>Telescope lsp_definitions<CR>")
-        -- map("n", "gd", "<cmd>Trouble lsp_definitions<CR>")
-      end)
-    end, 0)
-  end,
-})
 
 return M

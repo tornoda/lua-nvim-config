@@ -19,6 +19,8 @@ M.ui = {
   hl_override = {
     Comment = { italic = true },
     ["@comment"] = { italic = true },
+    CursorLineNr = { link = "CursorLine", italic = true },
+    Folded = { link = "Comment" },
   },
 }
 

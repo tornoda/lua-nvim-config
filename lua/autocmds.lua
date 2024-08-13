@@ -75,9 +75,10 @@ autocmd({ "BufEnter", "BufLeave" }, {
     local filetype = vim.bo.filetype
 
     if is_trouble_open and filetype == "trouble" then
-      vim.api.nvim_set_hl(0, "CursorLine", { underline = true, bold = true })
+      vim.api.nvim_set_hl(0, "CursorLine", { underline = true, bold = true, reverse = true })
+      vim.api.nvim_set_hl(0, "CursorLine", { link = "DiffChange" })
     else
-      vim.api.nvim_set_hl(0, "CursorLine", { underline = false, bold = false })
+      vim.api.nvim_set_hl(0, "CursorLine", { underline = false, bold = false, reverse = false })
     end
   end,
 })

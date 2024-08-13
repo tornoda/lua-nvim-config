@@ -1,8 +1,6 @@
 require "nvchad.options"
 local utils = require "utils"
 
--- text
-
 -- add yours here!
 
 local o = vim.o
@@ -17,6 +15,8 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagn
 })
 
 vim.opt.updatetime = 500
+vim.opt.foldminlines = 3
+vim.opt.foldnestmax = 4
 
 vim.cmd "set fillchars+=diff:╱"
 
