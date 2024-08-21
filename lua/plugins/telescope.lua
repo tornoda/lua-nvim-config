@@ -1,4 +1,6 @@
 dofile(vim.g.base46_cache .. "telescope")
+local telescope = require "telescope"
+local mappings = require "mappings"
 local add_to_trouble = require("trouble.sources.telescope").add
 local open_with_trouble = require("trouble.sources.telescope").open
 
@@ -59,7 +61,7 @@ local config = {
   buffer_previewer_maker = require("telescope.previewers").buffer_previewer_maker,
   mappings = {
     n = {
-      ["q"] = require("telescope.actions").close,
+      ["<leader>q"] = require("telescope.actions").close,
       ["<c-l>"] = open_with_trouble,
       ["<c-a>"] = add_to_trouble,
     },
@@ -74,9 +76,10 @@ local config = {
   },
 }
 
+local extensions_list = { "themes", "terms", "fzf", "ui-select" }
+
 local options = {
   defaults = config,
-  extensions_list = { "themes", "terms", "fzf", "ui-select" },
   extensions = {
     ["ui-select"] = {
       require("telescope.themes").get_dropdown(vim.tbl_extend("force", config, {
@@ -103,4 +106,23 @@ local options = {
   },
 }
 
-return options
+return {
+  { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+  {
+    "nvim-telescope/telescope-ui-select.nvim",
+  },
+  {
+    "nvim-telescope/telescope.nvim",
+    dependencies = { "nvim-treesitter/nvim-treesitter", "folke/trouble.nvim" },
+    cmd = { "Telescope" },
+    config = function()
+      telescope.setup(options)
+
+      for _, ext in ipairs(extensions_list) do
+        telescope.load_extension(ext)
+      end
+
+      mappings.telescope()
+    end,
+  },
+}

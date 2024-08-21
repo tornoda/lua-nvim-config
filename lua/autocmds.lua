@@ -25,40 +25,44 @@ autocmd({ "FileType", "BufWinEnter" }, {
 --     setDiffColors()
 --   end,
 -- })
-
--- vim.api.nvim_create_autocmd("QuickFixCmdPost", {
---   callback = function()
---     vim.cmd([[Trouble qflist open]])
---   end,
--- })
-autocmd("BufWinEnter", {
-  pattern = "quickfix",
-  -- https://github.com/folke/trouble.nvim/issues/70
-  callback = function()
-    local buftype = "quickfix"
-    if vim.fn.getloclist(0, { filewinid = 1 }).filewinid ~= 0 then
-      buftype = "loclist"
-    end
-
-    local ok, trouble = pcall(require, "trouble")
-    -- local ok, telescope_builtin = pcall(require, "telescope.builtin")
-    if ok then
-      vim.defer_fn(function()
-        vim.cmd "cclose"
-        -- telescope_builtin.quickfix()
-
-        trouble.open(buftype)
-        trouble.focus()
-      end, 0)
-    else
-      local set = vim.opt_local
-      set.colorcolumn = ""
-      set.number = false
-      set.relativenumber = false
-      set.signcolumn = "no"
+vim.api.nvim_create_autocmd("BufRead", {
+  callback = function(ev)
+    if vim.bo[ev.buf].buftype == "quickfix" then
+      vim.schedule(function()
+        vim.cmd [[cclose]]
+        vim.cmd [[Trouble qflist open]]
+      end)
     end
   end,
 })
+-- autocmd("BufWinEnter", {
+--   pattern = "quickfix",
+--   -- https://github.com/folke/trouble.nvim/issues/70
+--   callback = function()
+--     local buftype = "quickfix"
+--     if vim.fn.getloclist(0, { filewinid = 1 }).filewinid ~= 0 then
+--       buftype = "loclist"
+--     end
+--
+--     local ok, trouble = pcall(require, "trouble")
+--     -- local ok, telescope_builtin = pcall(require, "telescope.builtin")
+--     if ok then
+--       vim.defer_fn(function()
+--         vim.cmd "cclose"
+--         -- telescope_builtin.quickfix()
+--
+--         trouble.open(buftype)
+--         trouble.focus()
+--       end, 0)
+--     else
+--       local set = vim.opt_local
+--       set.colorcolumn = ""
+--       set.number = false
+--       set.relativenumber = false
+--       set.signcolumn = "no"
+--     end
+--   end,
+-- })
 
 autocmd({ "FileType", "BufWinEnter", "BufEnter" }, {
   callback = function()
@@ -75,7 +79,7 @@ autocmd({ "BufEnter", "BufLeave" }, {
     local filetype = vim.bo.filetype
 
     if is_trouble_open and filetype == "trouble" then
-      vim.api.nvim_set_hl(0, "CursorLine", { underline = true, bold = true, reverse = true })
+      -- vim.api.nvim_set_hl(0, "CursorLine", { underline = true, bold = true, reverse = true })
       vim.api.nvim_set_hl(0, "CursorLine", { link = "DiffChange" })
     else
       vim.api.nvim_set_hl(0, "CursorLine", { underline = false, bold = false, reverse = false })

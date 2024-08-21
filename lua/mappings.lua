@@ -1,5 +1,6 @@
 local telescope_builtin = require "telescope.builtin"
 local utils = require "utils"
+local func = require "lua.func"
 
 local map = vim.keymap.set
 
@@ -65,6 +66,32 @@ M.default = function()
   -- Comment
   map("n", "<leader>/", "gcc", { desc = "comment toggle", remap = true })
   map("v", "<leader>/", "gc", { desc = "comment toggle", remap = true })
+
+  -- 0 line
+  map({ "n", "v" }, "gh", function()
+    local pos = func.getLineHeadIndex().p0
+    vim.fn.cursor(0, pos)
+  end, { desc = "0 line" })
+  -- 25% line
+  map({ "n", "v" }, "gj", function()
+    local line = vim.fn.getline "."
+    vim.fn.cursor(0, math.floor((string.len(line)) / 4))
+  end, { desc = "25% line" })
+  -- 50% line
+  map({ "n", "v" }, "gm", function()
+    local line = vim.fn.getline "."
+    vim.fn.cursor(0, math.floor((string.len(line)) / 2))
+  end, { desc = "50% line" })
+  -- 75% line
+  map({ "n", "v" }, "gk", function()
+    local line = vim.fn.getline "."
+    vim.fn.cursor(0, math.floor((3 * string.len(line)) / 4))
+  end, { desc = "75% line" })
+  -- 100% line
+  map({ "n", "v" }, "gl", function()
+    local line = vim.fn.getline "."
+    vim.fn.cursor(0, string.len(line))
+  end, { desc = "100% line" })
 
   map({ "n", "v" }, "<leader>q", "<cmd>q<CR>")
   map("i", ";q", "<ESC>")
@@ -135,7 +162,6 @@ M.nvimtree = function(bufnr)
 end
 
 M.telescope = function()
-  map("n", "<leader>b", "<cmd>Telescope buffers<CR>")
   -- search the selection words
   map({ "v", "n" }, "<leader>fw", function()
     local cur_word = utils.get_current_word()
@@ -148,8 +174,8 @@ M.telescope = function()
       default_text = default_text,
     }
   end)
-  -- copy from nvchad
-  map("n", "<leader>fb", "<cmd>Telescope buffers<CR>", { desc = "telescope find buffers" })
+  map("n", "<leader>fb", "<cmd>Telescope current_buffer_fuzzy_find<CR>")
+  map("n", "<leader>b", "<cmd>Telescope buffers<CR>", { desc = "telescope find buffers" })
   map("n", "<leader>fh", "<cmd>Telescope help_tags<CR>", { desc = "telescope help page" })
   map("n", "<leader>ma", "<cmd>Telescope marks<CR>", { desc = "telescope find marks" })
   map("n", "<leader>fo", "<cmd>Telescope oldfiles<CR>", { desc = "telescope find oldfiles" })
@@ -247,8 +273,26 @@ M.gitsigns = function()
   map("n", "]c", "<cmd>Gitsigns next_hunk<CR>")
 end
 
+M.spectre = function()
+  map("n", "gF", function()
+    require("spectre").open {
+      is_insert_mode = true,
+      -- the directory where the search tool will be started in
+      -- cwd = "~/.config/nvim",
+      search_text = utils.get_current_word(),
+      -- replace_text = "test",
+      -- the pattern of files to consider for searching
+      -- path = "lua/**/*.lua",
+      -- the directories or files to search in
+      -- search_paths = { "lua/", "plugin/" },
+      is_close = true, -- close an exists instance of spectre and open new
+    }
+  end)
+end
+
 ------ register mapping -------
 M.default()
 M.lsp()
+M.spectre()
 
 return M

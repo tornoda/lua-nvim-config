@@ -34,4 +34,27 @@ M.setColor = function()
   --   ("A new %s was opened on tab page %d!")
 end
 
+M.getLineHeadIndex = function()
+  local first = 1
+
+  local line = vim.fn.getline "."
+  local len = string.len(line)
+
+  for i = 1, len do
+    local cur = string.sub(line, i, i)
+    print("i" .. i .. cur)
+    if cur == " " then
+      first = first + 1
+    else
+      break
+    end
+  end
+
+  return {
+    p0 = first,
+  }
+end
+
+M.getLineHeadIndex()
+
 return M
