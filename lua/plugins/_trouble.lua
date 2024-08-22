@@ -5,7 +5,6 @@ local mappings = require "mappings"
 return {
   "folke/trouble.nvim",
   cmd = "Trouble",
-  priority = 1000,
   opts = {
     -- pinned = true,
     auto_jump = true,

@@ -1,7 +1,8 @@
+local func = require "func"
+
 return {
   "sindrets/diffview.nvim",
-  event = "BufEnter",
-  lazy = true,
+  cmd = { "DiffviewOpen" },
   config = function()
     require("diffview").setup {
       enhanced_diff_hl = false,
@@ -12,10 +13,11 @@ return {
           height = 15,
         },
       },
-      -- hooks = {
-      --   view_opened = function()
-      --   end,
-      -- },
+      hooks = {
+        view_opened = function()
+          func.setColor()
+        end,
+      },
     }
   end,
 }

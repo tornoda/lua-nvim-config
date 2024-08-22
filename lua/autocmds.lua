@@ -20,11 +20,6 @@ autocmd({ "FileType", "BufWinEnter" }, {
   end,
 })
 
--- autocmd("User NvChadThemeReload", {
---   callback = function()
---     setDiffColors()
---   end,
--- })
 vim.api.nvim_create_autocmd("BufRead", {
   callback = function(ev)
     if vim.bo[ev.buf].buftype == "quickfix" then
@@ -64,28 +59,28 @@ vim.api.nvim_create_autocmd("BufRead", {
 --   end,
 -- })
 
-autocmd({ "FileType", "BufWinEnter", "BufEnter" }, {
-  callback = function()
-    local ret = vim.bo.filetype
-    if string.find(ret, "Diffview") ~= nil then
-      func.setColor()
-    end
-  end,
-})
+-- autocmd({ "FileType", "BufWinEnter", "BufEnter" }, {
+--   callback = function()
+--     local ret = vim.bo.filetype
+--     if string.find(ret, "Diffview") ~= nil then
+--       func.setColor()
+--     end
+--   end,
+-- })
 
-autocmd({ "BufEnter", "BufLeave" }, {
-  callback = function()
-    local is_trouble_open = require("trouble").is_open()
-    local filetype = vim.bo.filetype
-
-    if is_trouble_open and filetype == "trouble" then
-      -- vim.api.nvim_set_hl(0, "CursorLine", { underline = true, bold = true, reverse = true })
-      vim.api.nvim_set_hl(0, "CursorLine", { link = "DiffChange" })
-    else
-      vim.api.nvim_set_hl(0, "CursorLine", { underline = false, bold = false, reverse = false })
-    end
-  end,
-})
+-- autocmd({ "BufEnter", "BufLeave" }, {
+--   callback = function()
+--     local is_trouble_open = require("trouble").is_open()
+--     local filetype = vim.bo.filetype
+--
+--     if is_trouble_open and filetype == "trouble" then
+--       -- vim.api.nvim_set_hl(0, "CursorLine", { underline = true, bold = true, reverse = true })
+--       vim.api.nvim_set_hl(0, "CursorLine", { link = "DiffChange" })
+--     else
+--       vim.api.nvim_set_hl(0, "CursorLine", { underline = false, bold = false, reverse = false })
+--     end
+--   end,
+-- })
 
 autocmd("BufHidden", {
   callback = function()
