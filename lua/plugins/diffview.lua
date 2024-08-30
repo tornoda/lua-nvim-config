@@ -1,8 +1,21 @@
 local func = require "func"
+local map = vim.keymap.set
+
+-- mapping
+map({ "n", "v", "i" }, "<leader>do", function()
+  vim.api.nvim_command "DiffviewOpen"
+end, { desc = "Open Diffview" })
+map({ "n", "v", "i" }, "<leader>dc", function()
+  vim.api.nvim_command "DiffviewClose"
+end, { desc = "Close Diffview" })
+map({ "n", "v", "i" }, "<leader>dh", function()
+  vim.api.nvim_command "DiffviewFileHistory"
+end, { desc = "Diffview File History" })
 
 return {
   "sindrets/diffview.nvim",
-  cmd = { "DiffviewOpen" },
+  lazy = false,
+  -- cmd = { "DiffviewOpen", "DiffviewFileHistory" },
   config = function()
     require("diffview").setup {
       enhanced_diff_hl = false,
@@ -10,13 +23,24 @@ return {
         listing_style = "list",
         win_config = { -- See ':h diffview-config-win_config'
           position = "bottom",
-          height = 15,
+          height = 10,
         },
       },
       hooks = {
         view_opened = function()
           func.setColor()
         end,
+      },
+      view = {
+        default = {
+          -- Config for changed files, and staged files in diff views.
+          layout = "diff2_horizontal",
+          disable_diagnostics = false, -- Temporarily disable diagnostics for diff buffers while in the view.
+          winbar_info = true, -- See |diffview-config-view.x.winbar_info|
+        },
+        merge_tool = {
+          layout = "diff4_mixed",
+        },
       },
     }
   end,

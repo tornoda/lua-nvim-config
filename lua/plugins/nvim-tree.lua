@@ -1,8 +1,14 @@
 local mappings = require "mappings"
 
+local map = vim.keymap.set
+
+map("n", "<C-n>", "<cmd>NvimTreeToggle<CR>", { desc = "nvimtree toggle window" })
+map("n", "<leader>e", "<cmd>NvimTreeFocus<CR>", { desc = "nvimtree focus window" })
+
 return {
   "nvim-tree/nvim-tree.lua",
-  cmd = { "NvimTreeToggle", "NvimTreeFocus" },
+  lazy = false,
+  -- cmd = { "NvimTreeToggle", "NvimTreeFocus" },
   opts = {
     view = {
       centralize_selection = true,
@@ -21,8 +27,7 @@ return {
       local api = require "nvim-tree.api"
       -- default mappings
       api.config.mappings.default_on_attach(bufnr)
-
-      mappings.nvimtree(bufnr)
+      -- mappings.nvimtree(bufnr)
     end,
   },
   config = function(_, opts)

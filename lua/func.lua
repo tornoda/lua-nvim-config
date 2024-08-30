@@ -15,9 +15,9 @@ local M = {}
 
 -- Make it better to use. see: https://github.com/sindrets/diffview.nvim/issues/241
 M.setColor = function()
-  local themeName = dofile("lua/chadrc.lua").ui.theme
+  local color = vim.o.background
 
-  if string.find(themeName, "light") ~= nil then
+  if color ~= "dark" then
     vim.api.nvim_set_hl(0, "DiffAdd", { bg = "#d7eed8", fg = nil })
     vim.api.nvim_set_hl(0, "DiffDelete", { fg = "#ffbebe" })
     vim.api.nvim_set_hl(0, "DiffText", { bg = "#a6daa9", fg = nil })
@@ -42,7 +42,6 @@ M.getLineHeadIndex = function()
 
   for i = 1, len do
     local cur = string.sub(line, i, i)
-    print("i" .. i .. cur)
     if cur == " " then
       first = first + 1
     else

@@ -2,7 +2,8 @@
 -- local on_attach = require("nvchad.configs.lspconfig").on_attach
 local on_init = require("nvchad.configs.lspconfig").on_init
 local capabilities = require("nvchad.configs.lspconfig").capabilities
-local mappings = require "lua.mappings"
+
+local mappings = dofile(vim.fn.stdpath "config" .. "/lua/mappings.lua")
 
 local lspconfig = require "lspconfig"
 -- 记得装server:

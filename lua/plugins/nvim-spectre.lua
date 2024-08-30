@@ -1,6 +1,6 @@
 return {
   "nvim-pack/nvim-spectre",
-  enabled = true,
+  cmd = { "Spectre" },
   config = function()
     require("spectre").setup {
       mapping = {

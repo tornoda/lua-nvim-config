@@ -47,6 +47,7 @@ o.updatetime = 500
 -- when cursor reaches end/beginning of line
 opt.whichwrap:append "<>[]hl"
 
+-- see https://vim.fandom.com/wiki/Keep_your_cursor_centered_vertically_on_the_screen to become a pro
 opt.scrolloff = 2
 opt.wrap = false
 -- opt.autoindent = false

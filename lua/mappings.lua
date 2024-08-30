@@ -1,6 +1,6 @@
 local telescope_builtin = require "telescope.builtin"
 local utils = require "utils"
-local func = require "lua.func"
+local func = dofile(vim.fn.stdpath "config" .. "/lua/func.lua")
 
 local map = vim.keymap.set
 
@@ -9,31 +9,6 @@ local map = vim.keymap.set
 -- end, { desc = "buffer close" })
 
 -- telescope
-
--- terminal
-map("t", "<C-x>", "<C-\\><C-N>", { desc = "terminal escape terminal mode" })
-
--- new terminals
-map("n", "<leader>h", function()
-  require("nvchad.term").new { pos = "sp" }
-end, { desc = "terminal new horizontal term" })
-
-map("n", "<leader>v", function()
-  require("nvchad.term").new { pos = "vsp" }
-end, { desc = "terminal new vertical window" })
-
--- toggleable
-map({ "n", "t" }, "<A-v>", function()
-  require("nvchad.term").toggle { pos = "vsp", id = "vtoggleTerm" }
-end, { desc = "terminal toggleable vertical term" })
-
-map({ "n", "t" }, "<A-h>", function()
-  require("nvchad.term").toggle { pos = "sp", id = "htoggleTerm" }
-end, { desc = "terminal new horizontal term" })
-
-map({ "n", "t" }, "<A-i>", function()
-  require("nvchad.term").toggle { pos = "float", id = "floatTerm" }
-end, { desc = "terminal toggle floating term" })
 
 -- whichkey
 map("n", "<leader>wK", "<cmd>WhichKey <CR>", { desc = "whichkey all keymaps" })
@@ -68,27 +43,27 @@ M.default = function()
   map("v", "<leader>/", "gc", { desc = "comment toggle", remap = true })
 
   -- 0 line
-  map({ "n", "v" }, "gh", function()
+  map({ "n", "v" }, "<C-9>", function()
     local pos = func.getLineHeadIndex().p0
     vim.fn.cursor(0, pos)
   end, { desc = "0 line" })
   -- 25% line
-  map({ "n", "v" }, "gj", function()
-    local line = vim.fn.getline "."
-    vim.fn.cursor(0, math.floor((string.len(line)) / 4))
-  end, { desc = "25% line" })
+  -- map({ "n", "v" }, "<C-j>", function()
+  --   local line = vim.fn.getline "."
+  --   vim.fn.cursor(0, math.floor((string.len(line)) / 4))
+  -- end, { desc = "25% line" })
   -- 50% line
-  map({ "n", "v" }, "gm", function()
+  map({ "n", "v" }, "<C-m>", function()
     local line = vim.fn.getline "."
     vim.fn.cursor(0, math.floor((string.len(line)) / 2))
   end, { desc = "50% line" })
   -- 75% line
-  map({ "n", "v" }, "gk", function()
-    local line = vim.fn.getline "."
-    vim.fn.cursor(0, math.floor((3 * string.len(line)) / 4))
-  end, { desc = "75% line" })
+  -- map({ "n", "v" }, "<C-k>", function()
+  --   local line = vim.fn.getline "."
+  --   vim.fn.cursor(0, math.floor((3 * string.len(line)) / 4))
+  -- end, { desc = "75% line" })
   -- 100% line
-  map({ "n", "v" }, "gl", function()
+  map({ "n", "v" }, "<C-0>", function()
     local line = vim.fn.getline "."
     vim.fn.cursor(0, string.len(line))
   end, { desc = "100% line" })
@@ -143,9 +118,6 @@ M.default = function()
     require("conform").format { lsp_fallback = true }
   end, { desc = "format files" })
 
-  map("n", "<C-n>", "<cmd>NvimTreeToggle<CR>", { desc = "nvimtree toggle window" })
-  map("n", "<leader>e", "<cmd>NvimTreeFocus<CR>", { desc = "nvimtree focus window" })
-
   map("n", "<tab>", function()
     require("nvchad.tabufline").next()
   end, { desc = "buffer goto next" })
@@ -153,12 +125,6 @@ M.default = function()
   map("n", "<S-tab>", function()
     require("nvchad.tabufline").prev()
   end, { desc = "buffer goto prev" })
-end
-
-M.nvimtree = function(bufnr)
-  local function opts(desc)
-    return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
-  end
 end
 
 M.telescope = function()
@@ -290,9 +256,38 @@ M.spectre = function()
   end)
 end
 
+M.terminal = function()
+  -- terminal
+  map("t", "<C-[>", "<C-\\><C-N>", { desc = "terminal escape terminal mode" })
+
+  -- new terminals
+  map("n", "<leader>h", function()
+    require("nvchad.term").new { pos = "sp" }
+  end, { desc = "terminal new horizontal term" })
+
+  map("n", "<leader>v", function()
+    require("nvchad.term").new { pos = "vsp" }
+  end, { desc = "terminal new vertical window" })
+
+  -- toggleable
+  map({ "n", "t" }, "<A-v>", function()
+    require("nvchad.term").toggle { pos = "vsp", id = "vtoggleTerm" }
+  end, { desc = "terminal toggleable vertical term" })
+
+  map({ "n", "t" }, "<A-h>", function()
+    require("nvchad.term").toggle { pos = "sp", id = "htoggleTerm" }
+  end, { desc = "terminal new horizontal term" })
+
+  map({ "n", "t" }, "<A-i>", function()
+    require("nvchad.term").toggle { pos = "float", id = "floatTerm" }
+  end, { desc = "terminal toggle floating term" })
+end
+
 ------ register mapping -------
 M.default()
+-- M.diffview()
 M.lsp()
 M.spectre()
+M.terminal()
 
 return M
