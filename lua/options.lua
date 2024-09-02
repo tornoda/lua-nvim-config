@@ -48,13 +48,9 @@ o.updatetime = 500
 opt.whichwrap:append "<>[]hl"
 
 -- see https://vim.fandom.com/wiki/Keep_your_cursor_centered_vertically_on_the_screen to become a pro
-opt.scrolloff = 2
+opt.scrolloff = 4
 opt.wrap = false
 -- opt.autoindent = false
--- vim.diagnostic.config { virtual_text = false }
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-  virtual_text = false,
-})
 
 opt.foldminlines = 2
 opt.foldnestmax = 4

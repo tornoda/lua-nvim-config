@@ -1,3 +1,10 @@
+local function set_mapping()
+  local map = vim.keymap.set
+  map("n", "<leader>fm", function()
+    require("conform").format { lsp_fallback = true }
+  end, { desc = "format files" })
+end
+
 return {
   "stevearc/conform.nvim",
   event = "BufWritePre", -- uncomment for format on save
@@ -19,5 +26,7 @@ return {
         quiet = true,
       },
     }
+
+    set_mapping()
   end,
 }

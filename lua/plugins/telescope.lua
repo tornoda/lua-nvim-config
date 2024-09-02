@@ -1,8 +1,44 @@
 dofile(vim.g.base46_cache .. "telescope")
+local telescope_builtin = require "telescope.builtin"
 local telescope = require "telescope"
-local mappings = require "mappings"
+local utils = require "utils"
 local add_to_trouble = require("trouble.sources.telescope").add
 local open_with_trouble = require("trouble.sources.telescope").open
+
+local function set_mapping()
+  local map = vim.keymap.set
+  map("n", "<leader><leader>", "<cmd>Telescope builtin<CR>")
+  map("n", "<leader>jl", "<cmd>Telescope jumplist<CR>")
+  map("n", "<leader>gs", "<cmd>Telescope git_status<CR>")
+  map("n", "<leader>ic", "<cmd>Telescope lsp_incoming_calls<CR>")
+  -- search the selection words
+  map({ "v", "n" }, "<leader>fw", function()
+    local cur_word = utils.get_current_word()
+    local _ret = string.find(cur_word, "[a-zA-Z_]+")
+    local hasPre = _ret == 1
+    local default_text = hasPre and "\\b" .. cur_word .. "\\b" or ""
+
+    telescope_builtin.live_grep {
+      prompt_title = "Grep Search (regex:on case_sensitive:on)",
+      default_text = default_text,
+    }
+  end)
+  map("n", "<leader>fb", "<cmd>Telescope current_buffer_fuzzy_find<CR>", { desc = "telescope find in current buffer" })
+  map("n", "<leader>b", "<cmd>Telescope buffers<CR>", { desc = "telescope find buffers" })
+  map("n", "<leader>fh", "<cmd>Telescope help_tags<CR>", { desc = "telescope help page" })
+  map("n", "<leader>ma", "<cmd>Telescope marks<CR>", { desc = "telescope find marks" })
+  map("n", "<leader>fo", "<cmd>Telescope oldfiles<CR>", { desc = "telescope find oldfiles" })
+  map("n", "<leader>cm", "<cmd>Telescope git_commits<CR>", { desc = "telescope git commits" })
+  map("n", "<leader>pt", "<cmd>Telescope terms<CR>", { desc = "telescope pick hidden term" })
+  map("n", "<leader>th", "<cmd>Telescope themes<CR>", { desc = "telescope nvchad themes" })
+  map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "telescope find files" })
+  map(
+    "n",
+    "<leader>fa",
+    "<cmd>Telescope find_files follow=true no_ignore=true hidden=true<CR>",
+    { desc = "telescope find all files" }
+  )
+end
 
 local config = {
   vimgrep_arguments = {
@@ -123,7 +159,7 @@ return {
         telescope.load_extension(ext)
       end
 
-      mappings.telescope()
+      set_mapping()
     end,
   },
 }
