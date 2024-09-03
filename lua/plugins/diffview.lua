@@ -1,16 +1,29 @@
 local func = require "func"
-local map = vim.keymap.set
 
--- mapping
-map({ "n", "v", "i" }, "<leader>do", function()
-  vim.api.nvim_command "DiffviewOpen"
-end, { desc = "Open Diffview" })
-map({ "n", "v", "i" }, "<leader>dc", function()
-  vim.api.nvim_command "DiffviewClose"
-end, { desc = "Close Diffview" })
-map({ "n", "v", "i" }, "<leader>dh", function()
-  vim.api.nvim_command "DiffviewFileHistory"
-end, { desc = "Diffview File History" })
+local function set_mappings()
+  local map = vim.keymap.set
+  map({ "n", "v", "i" }, "<leader>do", function()
+    vim.api.nvim_command "DiffviewOpen"
+  end, { desc = "Diffview Open" })
+  map({ "n", "v", "i" }, "<leader>dc", function()
+    vim.api.nvim_command "DiffviewClose"
+  end, { desc = "Diffview Close" })
+  map({ "n", "v", "i" }, "<leader>dh", function()
+    vim.api.nvim_command "DiffviewFileHistory"
+  end, { desc = "Diffview File History" })
+end
+
+local function set_autocmd()
+  local create_cmd = vim.api.nvim_create_user_command
+  local runCmd = vim.api.nvim_command
+  create_cmd("DF", function()
+    runCmd "DiffviewOpen"
+  end, {})
+
+  create_cmd("DC", function()
+    runCmd "DiffviewClose"
+  end, {})
+end
 
 return {
   "sindrets/diffview.nvim",
@@ -43,5 +56,8 @@ return {
         },
       },
     }
+
+    set_mappings()
+    set_autocmd()
   end,
 }

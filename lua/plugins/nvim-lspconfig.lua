@@ -14,7 +14,7 @@ local function set_mappings(bufnr)
   end, opts "NvRenamer")
   map("n", "grd", vim.lsp.buf.type_definition, opts "Go to type definition")
   map("n", "grD", vim.lsp.buf.declaration, opts "Go to declaration")
-  map("n", "gre", vim.diagnostic.open_float)
+  map("n", "gre", vim.diagnostic.open_float, opts "Show diagnostics")
 
   map("n", "<leader>sh", vim.lsp.buf.signature_help, opts "Show signature help")
   map("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, opts "Add workspace folder")
@@ -33,7 +33,18 @@ local lspconfig = require "lspconfig"
 -- 记得装server:
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
 -- 直接MasonInstallAll, 就可以把这里的都装上, 还会把mason配置里面的装上
-local servers = { "html", "cssls", "tsserver", "emmet_ls", "cssmodules_ls", "css_variables", "eslint", "lua" }
+local servers = { "html", "cssls", "tsserver", "emmet_ls", "cssmodules_ls", "css_variables", "eslint" }
+local servers_name_in_mason = {
+  "html-lsp",
+  "css-lsp",
+  "typescript-language-server",
+  "emmet-language-server",
+  "cssmodules-language-server",
+  "lua-language-server",
+  "stylua",
+  "prettier",
+  "eslint-lsp",
+}
 
 local function on_attach(_, bufnr)
   set_mappings(bufnr)
@@ -72,40 +83,49 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagn
 })
 
 return {
-  "neovim/nvim-lspconfig",
-  config = function()
-    -- lsps with default config
-    for _, lsp in ipairs(servers) do
-      lspconfig[lsp].setup {
+  {
+    "williamboman/mason.nvim",
+    lazy = false,
+    opts = {
+      ensure_installed = servers_name_in_mason,
+    },
+  },
+  {
+    "neovim/nvim-lspconfig",
+    config = function()
+      -- lsps with default config
+      for _, lsp in ipairs(servers) do
+        lspconfig[lsp].setup {
+          on_attach = on_attach,
+          on_init = on_init,
+          capabilities = capabilities,
+        }
+      end
+
+      lspconfig.lua_ls.setup {
         on_attach = on_attach,
-        on_init = on_init,
         capabilities = capabilities,
-      }
-    end
+        on_init = on_init,
 
-    lspconfig.lua_ls.setup {
-      on_attach = on_attach,
-      capabilities = capabilities,
-      on_init = on_init,
-
-      settings = {
-        Lua = {
-          diagnostics = {
-            globals = { "vim" },
-          },
-          workspace = {
-            library = {
-              vim.fn.expand "$VIMRUNTIME/lua",
-              vim.fn.expand "$VIMRUNTIME/lua/vim/lsp",
-              vim.fn.stdpath "data" .. "/lazy/ui/nvchad_types",
-              vim.fn.stdpath "data" .. "/lazy/lazy.nvim/lua/lazy",
-              "${3rd}/luv/library",
+        settings = {
+          Lua = {
+            diagnostics = {
+              globals = { "vim" },
             },
-            maxPreload = 100000,
-            preloadFileSize = 10000,
+            workspace = {
+              library = {
+                vim.fn.expand "$VIMRUNTIME/lua",
+                vim.fn.expand "$VIMRUNTIME/lua/vim/lsp",
+                vim.fn.stdpath "data" .. "/lazy/ui/nvchad_types",
+                vim.fn.stdpath "data" .. "/lazy/lazy.nvim/lua/lazy",
+                "${3rd}/luv/library",
+              },
+              maxPreload = 100000,
+              preloadFileSize = 10000,
+            },
           },
         },
-      },
-    }
-  end,
+      }
+    end,
+  },
 }

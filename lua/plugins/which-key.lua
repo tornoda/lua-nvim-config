@@ -6,6 +6,6 @@ map("n", "<leader>wk", function()
 end, { desc = "whichkey query lookup" })
 
 return {
-  "folke/which-key.nvim",
   enabled = true,
+  "folke/which-key.nvim",
 }

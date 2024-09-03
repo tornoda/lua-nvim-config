@@ -2,7 +2,7 @@ local function set_mapping()
   local map = vim.keymap.set
   map("n", "<leader>fm", function()
     require("conform").format { lsp_fallback = true }
-  end, { desc = "format files" })
+  end, { desc = "Format files" })
 end
 
 return {
@@ -26,7 +26,6 @@ return {
         quiet = true,
       },
     }
-
     set_mapping()
   end,
 }

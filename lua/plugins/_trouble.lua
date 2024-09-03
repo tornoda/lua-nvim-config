@@ -2,13 +2,13 @@
 -- because Lazy.nvim loads pluigns one by one from top to bottom
 local function set_mapping()
   local map = vim.keymap.set
-  map({ "n", "v" }, "<leader>tt", "<cmd>Trouble<cr>")
+  map({ "n", "v" }, "<leader>tt", "<cmd>Trouble<cr>", { desc = "Open trouble" })
   map({ "n", "v" }, "<leader>tc", function()
     require("trouble").close()
-  end)
+  end, { desc = "Close a trouble buffer" })
   map({ "n", "v" }, "<leader>tf", function()
     require("trouble").focus()
-  end)
+  end, { desc = "Focus trouble buffer" })
   -- keys = {--   {
   --     "<leader>xx",
   --     "<cmd>Trouble diagnostics toggle<cr>",
@@ -42,6 +42,19 @@ local function set_mapping()
   -- },
 end
 
+local function set_autocmd()
+  vim.api.nvim_create_autocmd("BufRead", {
+    callback = function(ev)
+      if vim.bo[ev.buf].buftype == "quickfix" then
+        vim.schedule(function()
+          vim.cmd [[cclose]]
+          vim.cmd [[Trouble qflist open]]
+        end)
+      end
+    end,
+  })
+end
+
 return {
   "folke/trouble.nvim",
   cmd = "Trouble",
@@ -58,5 +71,6 @@ return {
   config = function(_, opts)
     require("trouble").setup(opts)
     set_mapping()
+    set_autocmd()
   end,
 }

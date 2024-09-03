@@ -7,10 +7,8 @@ local open_with_trouble = require("trouble.sources.telescope").open
 
 local function set_mapping()
   local map = vim.keymap.set
-  map("n", "<leader><leader>", "<cmd>Telescope builtin<CR>")
-  map("n", "<leader>jl", "<cmd>Telescope jumplist<CR>")
-  map("n", "<leader>gs", "<cmd>Telescope git_status<CR>")
-  map("n", "<leader>ic", "<cmd>Telescope lsp_incoming_calls<CR>")
+  map("n", "<leader><leader>", "<cmd>Telescope builtin<CR>", { desc = "Telescope builtin" })
+
   -- search the selection words
   map({ "v", "n" }, "<leader>fw", function()
     local cur_word = utils.get_current_word()
@@ -22,22 +20,26 @@ local function set_mapping()
       prompt_title = "Grep Search (regex:on case_sensitive:on)",
       default_text = default_text,
     }
-  end)
-  map("n", "<leader>fb", "<cmd>Telescope current_buffer_fuzzy_find<CR>", { desc = "telescope find in current buffer" })
-  map("n", "<leader>b", "<cmd>Telescope buffers<CR>", { desc = "telescope find buffers" })
-  map("n", "<leader>fh", "<cmd>Telescope help_tags<CR>", { desc = "telescope help page" })
-  map("n", "<leader>ma", "<cmd>Telescope marks<CR>", { desc = "telescope find marks" })
-  map("n", "<leader>fo", "<cmd>Telescope oldfiles<CR>", { desc = "telescope find oldfiles" })
-  map("n", "<leader>cm", "<cmd>Telescope git_commits<CR>", { desc = "telescope git commits" })
-  map("n", "<leader>pt", "<cmd>Telescope terms<CR>", { desc = "telescope pick hidden term" })
-  map("n", "<leader>th", "<cmd>Telescope themes<CR>", { desc = "telescope nvchad themes" })
-  map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "telescope find files" })
+  end, { desc = "Telescope find current word" })
+  map("n", "<leader>fb", "<cmd>Telescope current_buffer_fuzzy_find<CR>", { desc = "Telescope find in current buffer" })
+  map("n", "<leader>fo", "<cmd>Telescope oldfiles<CR>", { desc = "Telescope find oldfiles" })
+  map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Telescope find files" })
   map(
     "n",
     "<leader>fa",
     "<cmd>Telescope find_files follow=true no_ignore=true hidden=true<CR>",
-    { desc = "telescope find all files" }
+    { desc = "Telescope find all files" }
   )
+
+  map("n", "<leader>jl", "<cmd>Telescope jumplist<CR>", { desc = "Telescope jumplist" })
+  map("n", "<leader>gs", "<cmd>Telescope git_status<CR>", { desc = "Telescope git_status" })
+  map("n", "<leader>ic", "<cmd>Telescope lsp_incoming_calls<CR>", { desc = "Telescope lsp_incoming_calls" })
+  map("n", "<leader>b", "<cmd>Telescope buffers<CR>", { desc = "Telescope find buffers" })
+  map("n", "<leader>fh", "<cmd>Telescope help_tags<CR>", { desc = "Telescope help page" })
+  map("n", "<leader>ma", "<cmd>Telescope marks<CR>", { desc = "Telescope find marks" })
+  map("n", "<leader>cm", "<cmd>Telescope git_commits<CR>", { desc = "Telescope git commits" })
+  map("n", "<leader>pt", "<cmd>Telescope terms<CR>", { desc = "Telescope pick hidden term" })
+  map("n", "<leader>th", "<cmd>Telescope themes<CR>", { desc = "Telescope nvchad themes" })
 end
 
 local config = {
@@ -113,7 +115,7 @@ local config = {
   },
 }
 
-local extensions_list = { "themes", "terms", "fzf", "ui-select" }
+local extensions_list = { "themes", "terms", "fzf", "ui-select", "projects" }
 
 local options = {
   defaults = config,

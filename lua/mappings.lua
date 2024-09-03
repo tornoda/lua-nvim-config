@@ -7,7 +7,6 @@ local map = vim.keymap.set
 --   require("nvchad.tabufline").close_buffer()
 -- end, { desc = "buffer close" })
 
--- blankline
 map("n", "<leader>cc", function()
   local config = { scope = {} }
   config.scope.exclude = { language = {}, node_type = {} }
@@ -74,7 +73,7 @@ M.default = function()
     local curWord = vim.fn.expand "<cword>"
     -- local path = vim.fn.expand('<cfile>')
     local line = vim.fn.line "."
-    local str = "console.log('" .. curWord .. "', " .. curWord .. ")"
+    local str = "console.log(`" .. curWord .. "`, " .. curWord .. ")"
     vim.fn.append(line, str)
   end)
   map({ "n", "v" }, "<leader>*", function()
@@ -113,11 +112,6 @@ M.default = function()
   end, { desc = "buffer goto prev" })
 end
 
-M.gitsigns = function()
-  map("n", "[c", "<cmd>Gitsigns prev_hunk<CR>")
-  map("n", "]c", "<cmd>Gitsigns next_hunk<CR>")
-end
-
 M.terminal = function()
   -- terminal
   map("t", "<C-[>", "<C-\\><C-N>", { desc = "terminal escape terminal mode" })
@@ -145,7 +139,6 @@ M.terminal = function()
   end, { desc = "terminal toggle floating term" })
 end
 
------- register mapping -------
 M.default()
 M.terminal()
 

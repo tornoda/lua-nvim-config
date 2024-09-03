@@ -29,6 +29,13 @@ return {
       api.config.mappings.default_on_attach(bufnr)
       -- mappings.nvimtree(bufnr)
     end,
+    -- for project.nvim
+    sync_root_with_cwd = true,
+    respect_buf_cwd = true,
+    update_focused_file = {
+      enable = true,
+      update_root = true,
+    },
   },
   config = function(_, opts)
     require("nvim-tree").setup(opts)
