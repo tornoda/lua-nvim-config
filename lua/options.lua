@@ -10,8 +10,8 @@ o.laststatus = 3
 o.showmode = false
 
 o.clipboard = "unnamedplus"
+-- o.cursorcolumn = true
 o.cursorline = true
-o.cursorcolumn = true
 o.cursorlineopt = "both"
 
 -- Indenting
@@ -52,8 +52,8 @@ opt.scrolloff = 4
 opt.wrap = false
 -- opt.autoindent = false
 
-opt.foldminlines = 2
-opt.foldnestmax = 4
+-- opt.foldminlines = 2
+-- opt.foldnestmax = 4
 
 vim.cmd "set fillchars+=diff:╱"
 

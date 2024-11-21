@@ -22,6 +22,7 @@ local function set_mapping()
     }
   end, { desc = "Telescope find current word" })
   map("n", "<leader>fb", "<cmd>Telescope current_buffer_fuzzy_find<CR>", { desc = "Telescope find in current buffer" })
+  map("n", "f/", "<cmd>Telescope current_buffer_fuzzy_find<CR>", { desc = "Telescope find in current buffer" })
   map("n", "<leader>fo", "<cmd>Telescope oldfiles<CR>", { desc = "Telescope find oldfiles" })
   map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Telescope find files" })
   map(

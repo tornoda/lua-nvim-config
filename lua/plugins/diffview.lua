@@ -40,9 +40,8 @@ return {
         },
       },
       hooks = {
-        view_opened = function()
-          func.setColor()
-        end,
+        view_enter = func.setColor,
+        view_opened = func.setColor,
       },
       view = {
         default = {
@@ -59,5 +58,6 @@ return {
 
     set_mappings()
     set_autocmd()
+    func.setColor()
   end,
 }

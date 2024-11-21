@@ -17,6 +17,7 @@ return {
         typescriptreact = { "prettierd" },
         css = { "prettierd" },
         html = { "prettierd" },
+        scss = { "prettierd" },
       },
       format_on_save = {
         -- These options will be passed to conform.format()

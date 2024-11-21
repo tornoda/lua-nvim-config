@@ -1,5 +1,3 @@
--- EXAMPLE
-
 local map = vim.keymap.set
 
 local function set_mappings(bufnr)
@@ -10,7 +8,8 @@ local function set_mappings(bufnr)
   map("n", "gri", vim.lsp.buf.implementation, opts "Go to implementation")
   map("n", "grr", vim.lsp.buf.references, opts "Show references")
   map("n", "grn", function()
-    require "nvchad.lsp.renamer"()
+    vim.lsp.buf.rename()
+    -- require "nvchad.lsp.renamer"()
   end, opts "NvRenamer")
   map("n", "grd", vim.lsp.buf.type_definition, opts "Go to type definition")
   map("n", "grD", vim.lsp.buf.declaration, opts "Go to declaration")
@@ -33,18 +32,7 @@ local lspconfig = require "lspconfig"
 -- 记得装server:
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
 -- 直接MasonInstallAll, 就可以把这里的都装上, 还会把mason配置里面的装上
-local servers = { "html", "cssls", "tsserver", "emmet_ls", "cssmodules_ls", "css_variables", "eslint" }
-local servers_name_in_mason = {
-  "html-lsp",
-  "css-lsp",
-  "typescript-language-server",
-  "emmet-language-server",
-  "cssmodules-language-server",
-  "lua-language-server",
-  "stylua",
-  "prettier",
-  "eslint-lsp",
-}
+local servers = { "html", "cssls", "ts_ls", "emmet_ls", "cssmodules_ls", "css_variables", "eslint" }
 
 local function on_attach(_, bufnr)
   set_mappings(bufnr)
@@ -77,15 +65,13 @@ capabilities.textDocument.completion.completionItem = {
   },
 }
 
-vim.diagnostic.config { virtual_text = true, signs = false }
+vim.diagnostic.config { virtual_text = false, signs = true }
 
 return {
   {
     "williamboman/mason.nvim",
     lazy = false,
-    opts = {
-      ensure_installed = servers_name_in_mason,
-    },
+    opts = {},
   },
   {
     "neovim/nvim-lspconfig",
