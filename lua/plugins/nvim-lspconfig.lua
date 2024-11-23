@@ -65,6 +65,12 @@ capabilities.textDocument.completion.completionItem = {
   },
 }
 
+-- for nvim-ufo
+capabilities.textDocument.foldingRange = {
+  dynamicRegistration = false,
+  lineFoldingOnly = true,
+}
+
 vim.diagnostic.config { virtual_text = false, signs = true }
 
 return {

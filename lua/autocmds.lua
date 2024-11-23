@@ -1,6 +1,15 @@
-local func = require "func"
 local autocmd = vim.api.nvim_create_autocmd
 local utils = require "utils"
+
+-- respect: https://github.com/github-naresh/auto-fold-imports.nvim/blob/main/lua/auto-fold-imports/init.lua
+autocmd({ "BufRead", "BufNewFile" }, {
+  callback = function()
+    local ok, ufo = pcall(require, "ufo")
+    if ok then
+      -- ufo.closeAllFolds()
+    end
+  end,
+})
 
 autocmd({ "FileType", "BufWinEnter" }, {
   callback = function()
