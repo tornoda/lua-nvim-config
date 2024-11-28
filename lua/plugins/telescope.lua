@@ -102,8 +102,6 @@ local config = {
     n = {
       ["<leader>q"] = require("telescope.actions").close,
       ["q"] = require("telescope.actions").close,
-      ["<c-l>"] = open_with_trouble,
-      ["<c-a>"] = add_to_trouble,
     },
     i = {
       ["<c-l>"] = open_with_trouble,

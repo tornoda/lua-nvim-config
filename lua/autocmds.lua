@@ -6,7 +6,7 @@ autocmd({ "BufRead", "BufNewFile" }, {
   callback = function()
     local ok, ufo = pcall(require, "ufo")
     if ok then
-      -- ufo.closeAllFolds()
+      ufo.closeAllFolds()
     end
   end,
 })
