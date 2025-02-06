@@ -67,7 +67,8 @@ M.default = function()
   map("n", "<leader>5", "5gt")
   map("n", "<leader>6", "6gt")
   map("v", "p", '"0p', { noremap = true })
-  map("n", "<space>", "viw")
+  -- TODO del this
+  -- map("n", "<space>", "viw")
 
   map("n", "<leader>cc", function()
     local curWord = vim.fn.expand "<cword>"

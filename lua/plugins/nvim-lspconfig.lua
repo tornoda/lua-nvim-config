@@ -15,7 +15,7 @@ local function set_mappings(bufnr)
   map("n", "grD", vim.lsp.buf.declaration, opts "Go to declaration")
   map("n", "gre", vim.diagnostic.open_float, opts "Show diagnostics")
 
-  map("n", "<leader>sh", vim.lsp.buf.signature_help, opts "Show signature help")
+  -- map("n", "<leader>sh", vim.lsp.buf.signature_help, opts "Show signature help")
   map("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, opts "Add workspace folder")
   map("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder, opts "Remove workspace folder")
 

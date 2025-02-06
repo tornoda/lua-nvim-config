@@ -25,6 +25,13 @@ local function set_mapping()
   map("n", "f/", "<cmd>Telescope current_buffer_fuzzy_find<CR>", { desc = "Telescope find in current buffer" })
   map("n", "<leader>fo", "<cmd>Telescope oldfiles<CR>", { desc = "Telescope find oldfiles" })
   map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Telescope find files" })
+  map("n", "<leader>fl", "<cmd>Telescope lsp_document_symbols<cr>", { desc = "Telescope find lsp_document_symbols" })
+  map(
+    "n",
+    "<leader>fs",
+    "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>",
+    { desc = "Telescope find lsp_dynamic_workspace_symbols" }
+  )
   map(
     "n",
     "<leader>fa",
