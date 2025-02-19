@@ -40,17 +40,12 @@ return {
       "uga-rosa/cmp-dictionary",
       -- "tzachar/cmp-fuzzy-buffer",
       "hrsh7th/cmp-omni",
-      "f3fora/cmp-spell",
       "hrsh7th/cmp-path",
       "ray-x/cmp-treesitter",
     },
   },
   config = function()
     local cmp = require "cmp"
-
-    -- for spell
-    vim.opt.spell = true
-    vim.opt.spelllang = { "en_us" }
 
     cmp.setup {
       completion = { completeopt = "menu,menuone" },
@@ -100,16 +95,6 @@ return {
         { name = "nvim_lua" },
         { name = "path" },
         -- { name = "treesitter" },
-        -- {
-        --   name = "spell",
-        --   option = {
-        --     keep_all_entries = false,
-        --     enable_in_context = function()
-        --       return true
-        --     end,
-        --     preselect_correct_word = true,
-        --   },
-        -- },
       },
     }
   end,

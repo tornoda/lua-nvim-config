@@ -81,4 +81,6 @@ M.foldImports = function()
   end
 end
 
+M.autoJumpFilepath = function() end
+
 return M

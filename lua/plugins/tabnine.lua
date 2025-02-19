@@ -1,3 +1,6 @@
+do
+  return {}
+end
 return {
   "codota/tabnine-nvim",
   lazy = false,

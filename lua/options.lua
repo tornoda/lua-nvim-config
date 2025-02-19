@@ -70,3 +70,9 @@ local is_windows = vim.fn.has "win32" ~= 0
 local sep = is_windows and "\\" or "/"
 local delim = is_windows and ";" or ":"
 vim.env.PATH = table.concat({ vim.fn.stdpath "data", "mason", "bin" }, sep) .. delim .. vim.env.PATH
+
+-- diff mode colors
+vim.api.nvim_set_hl(0, "DiffAdd", { fg = "NONE", bg = "#005f00" })
+vim.api.nvim_set_hl(0, "DiffChange", { fg = "NONE", bg = "#005f5f" })
+vim.api.nvim_set_hl(0, "DiffDelete", { fg = "NONE", bg = "#5f0000" })
+vim.api.nvim_set_hl(0, "DiffText", { fg = "NONE", bg = "#870000" })

@@ -140,7 +140,34 @@ M.terminal = function()
   end, { desc = "terminal toggle floating term" })
 end
 
+-- user custom mappings
+M.extend = function()
+  -- gen by chatgpt
+  vim.keymap.set("n", "gx", function()
+    local file = vim.fn.expand "<cfile>" -- 获取光标下的文件路径
+    -- 获取当前行的全部文本
+    local line_text = vim.api.nvim_get_current_line()
+
+    -- 使用正则匹配文件路径、行号、列号（假设文件路径中不包含空格）
+    local lnum, col = line_text:match ".+:(%d+):(%d+)"
+    if file then
+      -- 如果存在多个窗口，则切换到其它窗口
+      if vim.fn.winnr "$" > 1 then
+        vim.cmd "wincmd p" -- 切换到上一个窗口（一般是非当前窗口）
+      end
+      vim.cmd("edit " .. file)
+      if lnum then
+        vim.cmd(lnum) -- 跳转到指定行
+      end
+      if col then -- 如果存在列号，则跳转到指定列
+        vim.cmd("normal! " .. col .. "|") -- 跳转到指定列
+      end
+    end
+  end, { silent = true })
+end
+
 M.default()
 M.terminal()
+M.extend()
 
 return M
