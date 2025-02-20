@@ -1,4 +1,20 @@
 local map = vim.keymap.set
+local create_cmd = vim.api.nvim_create_user_command
+
+create_cmd("ReloadDiagnostic", function()
+  local bufnr = vim.api.nvim_get_current_buf()
+
+  -- 重新加载诊断
+  vim.diagnostic.reset(nil, bufnr)
+  vim.lsp.buf.clear_references()
+  vim.lsp.buf.document_highlight()
+
+  -- 重新启动 Tree-sitter 高亮
+  vim.treesitter.stop(bufnr)
+  vim.treesitter.start(bufnr)
+
+  print "诊断和 Tree-sitter 已重新加载 🌳✨"
+end, {})
 
 local function set_mappings(bufnr)
   bufnr = bufnr or 0
