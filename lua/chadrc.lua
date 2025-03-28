@@ -4,7 +4,7 @@
 local M = {}
 
 M.ui = {
-  theme = "ashes",
+  theme = "chocolate",
 
   telescope = { style = "borderless" }, -- borderless / bordered
 
