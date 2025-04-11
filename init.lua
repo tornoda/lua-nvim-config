@@ -1,5 +1,5 @@
-vim.g.base46_cache = vim.fn.stdpath "data" .. "/nvchad/base46/"
 vim.g.mapleader = ";"
+vim.g.base46_cache = vim.fn.stdpath "data" .. "/base46/"
 
 -- bootstrap lazy and all plugins
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
@@ -26,11 +26,23 @@ require("lazy").setup({
   { import = "plugins" },
 }, lazy_config)
 
--- load theme
-dofile(vim.g.base46_cache .. "defaults")
--- print("vim.g.base46_cache" .. vim.g.base46_cache)
-dofile(vim.g.base46_cache .. "statusline")
-require "nvchad.autocmds"
+-- (method 2, for non lazyloaders) to load all highlights at once
+-- for _, v in ipairs(vim.fn.readdir(vim.g.base46_cache)) do
+--   dofile(vim.g.base46_cache .. v)
+-- end
+
+-- -- load theme
+-- dofile(vim.g.base46_cache .. "syntax")
+-- dofile(vim.g.base46_cache .. "defaults")
+-- -- print("vim.g.base46_cache" .. vim.g.base46_cache)
+-- dofile(vim.g.base46_cache .. "statusline")
+--
+--
+for _, v in ipairs(vim.fn.readdir(vim.g.base46_cache)) do
+  dofile(vim.g.base46_cache .. v)
+end
+
+-- require "nvchad.autocmds"
 
 vim.schedule(function()
   require "options"

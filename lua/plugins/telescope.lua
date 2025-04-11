@@ -1,4 +1,4 @@
-dofile(vim.g.base46_cache .. "telescope")
+-- dofile(vim.g.base46_cache .. "telescope")
 local telescope_builtin = require "telescope.builtin"
 local telescope = require "telescope"
 local utils = require "utils"
@@ -47,7 +47,6 @@ local function set_mapping()
   map("n", "<leader>ma", "<cmd>Telescope marks<CR>", { desc = "Telescope find marks" })
   map("n", "<leader>cm", "<cmd>Telescope git_commits<CR>", { desc = "Telescope git commits" })
   map("n", "<leader>pt", "<cmd>Telescope terms<CR>", { desc = "Telescope pick hidden term" })
-  map("n", "<leader>th", "<cmd>Telescope themes<CR>", { desc = "Telescope nvchad themes" })
 end
 
 local config = {
@@ -151,6 +150,18 @@ local options = {
   },
 }
 
+local function setHl()
+  local function set_preview_line_highlight()
+    vim.api.nvim_set_hl(0, "TelescopePreviewLine", { underline = true })
+  end
+
+  set_preview_line_highlight()
+
+  vim.api.nvim_create_autocmd("ColorScheme", {
+    callback = set_preview_line_highlight,
+  })
+end
+
 return {
   { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
   {
@@ -168,6 +179,7 @@ return {
       end
 
       set_mapping()
+      setHl()
     end,
   },
 }
