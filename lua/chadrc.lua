@@ -3,13 +3,13 @@
 ---@type ChadrcConfig
 local M = {
   base46 = {
-    theme = "aylin",
+    theme = "ashes",
     hl_add = {},
     hl_override = {},
     integrations = {},
     changed_themes = {},
     transparency = false,
-    theme_toggle = { "aylin", "one_light" },
+    theme_toggle = { "ashes", "one_light" },
   },
   ui = {
     cmp = {
