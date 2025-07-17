@@ -3,13 +3,13 @@
 ---@type ChadrcConfig
 local M = {
   base46 = {
-    theme = "ashes",
+    theme = "solarized_light",
     hl_add = {},
     hl_override = {},
     integrations = {},
     changed_themes = {},
     transparency = false,
-    theme_toggle = { "ashes", "one_light" },
+    theme_toggle = { "solarized_light", "solarized_light" },
   },
   ui = {
     cmp = {

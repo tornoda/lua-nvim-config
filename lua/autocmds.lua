@@ -98,3 +98,22 @@ autocmd("CursorHold", {
     -- vim.defer_fn(set_underline, 0)
   end,
 })
+
+-- 当你聚焦回到 Neovim 时（比如从外部编辑器或 git checkout 后切换回 Neovim），它会尝试重新加载被外部修改的文件。
+vim.o.autoread = true
+autocmd({ "FocusGained", "BufEnter" }, {
+  pattern = "*",
+  command = "checktime",
+})
+
+vim.api.nvim_create_autocmd("WinEnter", {
+  callback = function()
+    vim.opt.cursorline = true
+  end,
+})
+
+vim.api.nvim_create_autocmd("WinLeave", {
+  callback = function()
+    vim.opt.cursorline = false
+  end,
+})

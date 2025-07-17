@@ -59,7 +59,8 @@ M.default = function()
 
   map({ "n", "v" }, "<leader>q", "<cmd>q<CR>")
   map("i", ";q", "<ESC>")
-  map({ "n", "i", "v" }, "<leader>w", "<cmd> w <cr>")
+  map({ "n", "i", "v", "t" }, "<leader>w", "<cmd>wa<cr>")
+  map({ "n", "i", "v", "t" }, "<leader>bd", "<cmd>bd!<cr>")
   map("n", "<leader>1", "1gt")
   map("n", "<leader>2", "2gt")
   map("n", "<leader>3", "3gt")
@@ -104,13 +105,13 @@ M.default = function()
   map("n", "<leader>rn", "<cmd>set rnu!<CR>", { desc = "toggle relative number" })
   map("n", "<leader>ch", "<cmd>NvCheatsheet<CR>", { desc = "toggle nvcheatsheet" })
 
-  map("n", "<tab>", function()
-    require("nvchad.tabufline").next()
-  end, { desc = "buffer goto next" })
-
-  map("n", "<S-tab>", function()
-    require("nvchad.tabufline").prev()
-  end, { desc = "buffer goto prev" })
+  -- map("n", "<tab>", function()
+  --   require("nvchad.tabufline").next()
+  -- end, { desc = "buffer goto next" })
+  --
+  -- map("n", "<S-tab>", function()
+  --   require("nvchad.tabufline").prev()
+  -- end, { desc = "buffer goto prev" })
 end
 
 M.terminal = function()
@@ -164,6 +165,14 @@ M.extend = function()
       end
     end
   end, { silent = true })
+
+  vim.keymap.set("t", "<C-s>", function()
+    require("scripts.term_list").showSelection()
+  end)
+
+  vim.keymap.set({ "t", "n", "i" }, "<leader>rs", function()
+    require("scripts.run_npm_scripts").run_script_select()
+  end)
 end
 
 M.default()

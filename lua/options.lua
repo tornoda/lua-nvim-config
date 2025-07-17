@@ -57,8 +57,6 @@ opt.wrap = false
 
 vim.cmd "set fillchars+=diff:╱"
 
-vim.api.nvim_set_hl(0, "TelescopePreviewLine", { link = "CursorLine" })
-
 -- disable some default providers
 g.loaded_node_provider = 0
 g.loaded_python3_provider = 0

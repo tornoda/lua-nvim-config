@@ -48,7 +48,7 @@ local lspconfig = require "lspconfig"
 -- 记得装server:
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
 -- 直接MasonInstallAll, 就可以把这里的都装上, 还会把mason配置里面的装上
-local servers = { "html", "cssls", "ts_ls", "emmet_ls", "cssmodules_ls", "css_variables", "eslint" }
+local servers = { "html", "cssls", "ts_ls", "emmet_ls", "cssmodules_ls", "css_variables", "eslint", "stylelint_lsp" }
 
 local function on_attach(_, bufnr)
   set_mappings(bufnr)

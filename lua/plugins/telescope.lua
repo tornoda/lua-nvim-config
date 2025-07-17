@@ -45,8 +45,10 @@ local function set_mapping()
   map("n", "<leader>b", "<cmd>Telescope buffers<CR>", { desc = "Telescope find buffers" })
   map("n", "<leader>fh", "<cmd>Telescope help_tags<CR>", { desc = "Telescope help page" })
   map("n", "<leader>ma", "<cmd>Telescope marks<CR>", { desc = "Telescope find marks" })
-  map("n", "<leader>cm", "<cmd>Telescope git_commits<CR>", { desc = "Telescope git commits" })
   map("n", "<leader>pt", "<cmd>Telescope terms<CR>", { desc = "Telescope pick hidden term" })
+  --
+  map("n", "<leader>gc", "<cmd>Telescope git_commits<CR>", { desc = "Telescope git commits" })
+  map("n", "<leader>gb", "<cmd>Telescope git_branches<CR>", { desc = "Telescope get git branches" })
 end
 
 local config = {
@@ -152,7 +154,14 @@ local options = {
 
 local function setHl()
   local function set_preview_line_highlight()
-    vim.api.nvim_set_hl(0, "TelescopePreviewLine", { underline = true })
+    --  respecting to the color for DiffAdd
+    --  search setColor for more details
+    local color = vim.o.background ~= "dark" and "#3b643b" or "#d7eed8"
+    vim.api.nvim_set_hl(0, "TelescopePreviewLine", {
+      -- bg = vim.api.nvim_get_hl(0, { name = "DiffAdd" }).bg,
+      bg = color,
+      italic = true,
+    })
   end
 
   set_preview_line_highlight()

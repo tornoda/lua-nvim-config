@@ -59,6 +59,32 @@ local function set_mapping()
   map({ "n", "v" }, "<C-p>", function()
     require("trouble").toggle(lsp_document_symbols)
   end, { desc = "Open Trouble lsp document symbols" })
+
+  map("n", "<Tab>", function()
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      local buf = vim.api.nvim_win_get_buf(win)
+      local ft = vim.api.nvim_buf_get_option(buf, "filetype")
+      if ft == "trouble" then
+        local trouble = require "trouble"
+        trouble.next()
+        trouble.jump()
+        return
+      end
+    end
+  end, { noremap = true, silent = true })
+
+  map("n", "<S-Tab>", function()
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      local buf = vim.api.nvim_win_get_buf(win)
+      local ft = vim.api.nvim_buf_get_option(buf, "filetype")
+      if ft == "trouble" then
+        local trouble = require "trouble"
+        trouble.prev()
+        trouble.jump()
+        return
+      end
+    end
+  end, { noremap = true, silent = true })
   -- keys = {--   {
   --     "<leader>xx",
   --     "<cmd>Trouble diagnostics toggle<cr>",

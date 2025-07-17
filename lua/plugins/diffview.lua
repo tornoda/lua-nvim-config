@@ -11,6 +11,9 @@ local function set_mappings()
   map({ "n", "v", "i" }, "<leader>dh", function()
     vim.api.nvim_command "DiffviewFileHistory"
   end, { desc = "Diffview File History" })
+  map({ "n", "v", "i" }, "<leader>df", function()
+    vim.api.nvim_command "DiffviewFileHistory %"
+  end, { desc = "Diffview Current File History" })
 end
 
 local function set_autocmd()
@@ -24,6 +27,76 @@ local function set_autocmd()
     runCmd "DiffviewClose"
   end, {})
 end
+
+-- 存储原始的 TelescopePreviewLine 高亮信息
+local original_hl = {}
+
+-- 获取高亮组信息
+local function get_hl(group)
+  local hl_info = vim.api.nvim_get_hl(0, { name = group })
+  return hl_info
+end
+
+-- 自定义 preview line 样式
+local function set_custom_preview_line()
+  -- 示例：使用 CursorLine 的背景颜色作为 preview line 的背景
+  vim.api.nvim_set_hl(0, "CursorLine", {
+    bg = vim.api.nvim_get_hl(0, { name = "Search" }).ctermbg,
+    bold = true,
+    italic = true,
+  })
+end
+
+-- 恢复原始样式
+local function restore_preview_line()
+  vim.api.nvim_set_hl(0, "CursorLine", original_hl)
+end
+
+-- 是否已注册 color_scheme 回调
+local color_scheme_attached = false
+
+-- 控制是否启用 custom preview line
+local enable_custom_hl = false
+
+-- 统一管理设置
+local function update_preview_line()
+  if enable_custom_hl then
+    set_custom_preview_line()
+  else
+    restore_preview_line()
+  end
+end
+
+-- -- Diffview 进入时设置样式
+-- vim.api.nvim_create_autocmd("User", {
+--   pattern = "DiffviewViewEnter",
+--   callback = function()
+--     original_hl = get_hl "CursorLine"
+--     enable_custom_hl = true
+--     update_preview_line()
+--
+--     -- 如果尚未监听 ColorScheme，则添加监听
+--     if not color_scheme_attached then
+--       vim.api.nvim_create_autocmd("ColorScheme", {
+--         callback = function()
+--           if enable_custom_hl then
+--             set_custom_preview_line()
+--           end
+--         end,
+--       })
+--       color_scheme_attached = true
+--     end
+--   end,
+-- })
+--
+-- -- Diffview 离开时恢复样式
+-- vim.api.nvim_create_autocmd("User", {
+--   pattern = "DiffviewViewLeave",
+--   callback = function()
+--     enable_custom_hl = false
+--     restore_preview_line()
+--   end,
+-- })
 
 return {
   "sindrets/diffview.nvim",
