@@ -46,9 +46,14 @@ end
 
 -- require "nvchad.autocmds"
 
+-- 异步加载非关键模块，提升启动速度
 vim.schedule(function()
   require "options"
   require "mappings"
+end)
+
+-- 延迟加载其他模块，避免阻塞启动
+vim.defer_fn(function()
   require "autocmds"
   require "cmds"
-end)
+end, 100)

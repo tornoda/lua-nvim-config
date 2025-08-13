@@ -1,4 +1,7 @@
 -- https://github.com/kevinhwang91/nvim-ufo
+-- do
+--   return {}
+-- end
 
 return {
   "kevinhwang91/nvim-ufo",

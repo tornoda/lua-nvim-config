@@ -3,13 +3,13 @@
 ---@type ChadrcConfig
 local M = {
   base46 = {
-    theme = "solarized_light",
+    theme = "ashes",
     hl_add = {},
     hl_override = {},
     integrations = {},
     changed_themes = {},
     transparency = false,
-    theme_toggle = { "solarized_light", "solarized_light" },
+    theme_toggle = { "ashes", "ashes" },
   },
   ui = {
     cmp = {
@@ -93,7 +93,7 @@ local M = {
 
 return M
 -- M.ui = {
---   theme = "chocolate",
+--   theme = "ashes",
 --
 --   telescope = { style = "borderless" }, -- borderless / bordered
 --

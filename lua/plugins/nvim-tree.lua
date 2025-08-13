@@ -73,7 +73,7 @@ end
 return {
   "nvim-tree/nvim-tree.lua",
   lazy = false,
-  -- cmd = { "NvimTreeToggle", "NvimTreeFocus" },
+  cmd = { "NvimTreeToggle", "NvimTreeFocus" },
   opts = {
     view = {
       centralize_selection = true,
@@ -96,15 +96,32 @@ return {
     filters = { dotfiles = false },
     disable_netrw = true,
     hijack_cursor = true,
-    -- for project.nvim
-    sync_root_with_cwd = true,
-    respect_buf_cwd = true,
+    -- 禁用与工作目录同步，保持工作目录不变
+    sync_root_with_cwd = false,
+    respect_buf_cwd = false,
     update_focused_file = {
-      enable = true,
-      update_root = true,
+      enable = true,  -- 禁用自动聚焦更新
+      update_root = false,
     },
   },
   config = function(_, opts)
     require("nvim-tree").setup(opts)
+    
+    -- 额外的保护措施：确保nvim-tree不会改变工作目录
+    local api = require("nvim-tree.api")
+    
+    -- 重写change_root_to_node函数，防止改变工作目录
+    local original_change_root = api.tree.change_root_to_node
+    api.tree.change_root_to_node = function()
+      -- 不执行改变根目录的操作
+      vim.notify("已禁用自动改变根目录功能", vim.log.levels.INFO)
+    end
+    
+    -- 重写change_root_to_parent函数
+    local original_change_parent = api.tree.change_root_to_parent
+    api.tree.change_root_to_parent = function()
+      -- 不执行改变根目录的操作
+      vim.notify("已禁用自动改变根目录功能", vim.log.levels.INFO)
+    end
   end,
 }

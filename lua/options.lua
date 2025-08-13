@@ -21,6 +21,9 @@ o.smartindent = true
 o.tabstop = 2
 o.softtabstop = 2
 
+-- Disable auto change directory
+o.autochdir = false
+
 opt.fillchars = { eob = " " }
 o.ignorecase = true
 o.smartcase = true
@@ -74,3 +77,58 @@ vim.api.nvim_set_hl(0, "DiffAdd", { fg = "NONE", bg = "#005f00" })
 vim.api.nvim_set_hl(0, "DiffChange", { fg = "NONE", bg = "#005f5f" })
 vim.api.nvim_set_hl(0, "DiffDelete", { fg = "NONE", bg = "#5f0000" })
 vim.api.nvim_set_hl(0, "DiffText", { fg = "NONE", bg = "#870000" })
+
+-- 性能优化配置
+-- 减少交换文件写入频率
+o.swapfile = false
+o.backup = false
+o.writebackup = false
+
+-- 优化搜索性能
+o.hlsearch = false
+o.incsearch = true
+o.lazyredraw = true
+
+-- 优化文件类型检测
+o.filetype = "on"
+o.syntax = "on"
+
+-- 优化缓冲区性能
+o.hidden = true
+
+-- 优化窗口性能
+o.lazyredraw = true
+o.ttyfast = true
+
+-- 优化终端性能
+o.termguicolors = true
+
+-- 减少不必要的功能
+o.compatible = false
+o.showmatch = false
+o.showmode = false
+o.ruler = false
+o.modeline = false
+o.modelines = 0
+
+-- 优化自动完成
+o.completeopt = "menu,menuone,noinsert,noselect"
+o.pumheight = 10
+o.pumblend = 0
+
+-- 优化文件监控
+o.autoread = true
+o.autowrite = false
+o.autowriteall = false
+
+-- 代码修复和格式化相关选项
+-- 启用LSP代码操作
+o.tagfunc = "v:lua.vim.lsp.tagfunc"
+-- 启用LSP格式化
+o.formatexpr = "v:lua.vim.lsp.formatexpr()"
+-- 启用LSP缩进
+o.indentexpr = "v:lua.vim.lsp.indentexpr()"
+
+-- 优化诊断显示
+o.updatetime = 500  -- 减少诊断更新频率
+o.signcolumn = "yes"  -- 显示诊断标记列

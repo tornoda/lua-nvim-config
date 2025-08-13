@@ -41,7 +41,40 @@ return {
         "compiler",
         "bugreport",
         "ftplugin",
+        -- 添加更多不必要的插件
+        "man",
+        "plugin",
+        "spellfile",
+        "syntax",
+        "syntaxcomplete",
+        "vimball",
+        "vimballPlugin",
+        "zip",
+        "zipPlugin",
+        "tar",
+        "tarPlugin",
+        "rrhelper",
+        "getscript",
+        "getscriptPlugin",
+        "logipat",
+        "netrw",
+        "netrwPlugin",
+        "netrwSettings",
+        "netrwFileHandlers",
+        "matchit",
+        "2html_plugin",
+        "tohtml",
+        "gzip",
       },
+    },
+    -- 添加缓存配置
+    cache = {
+      enabled = true,
+      path = vim.fn.stdpath("cache") .. "/lazy",
+    },
+    -- 添加检查配置
+    check = {
+      enabled = false, -- 禁用启动时检查更新
     },
   },
 }

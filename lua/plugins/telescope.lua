@@ -61,6 +61,8 @@ local config = {
     "--line-number",
     "--column",
     "--smart-case",
+    -- 性能优化：限制搜索结果
+    "--max-count=1000",
   },
   prompt_prefix = " 🍭 ",
   -- prompt_prefix = "   ",
@@ -93,7 +95,15 @@ local config = {
     preview_cutoff = 8,
   },
   file_sorter = require("telescope.sorters").get_fuzzy_file,
-  file_ignore_patterns = { "node_modules" },
+  file_ignore_patterns = { 
+    "node_modules",
+    ".git",
+    ".cache",
+    -- "dist",
+    "build",
+    "*.pyc",
+    "__pycache__",
+  },
   generic_sorter = require("telescope.sorters").get_generic_fuzzy_sorter,
   path_display = { "truncate" },
   winblend = 0,
@@ -106,6 +116,18 @@ local config = {
   qflist_previewer = require("telescope.previewers").vim_buffer_qflist.new,
   -- Developer configurations: Not meant for general override
   buffer_previewer_maker = require("telescope.previewers").buffer_previewer_maker,
+  
+  -- 性能优化配置
+  cache_picker = {
+    num_pickers = -1,
+  },
+  
+  -- 限制预览大小
+  preview = {
+    treesitter = false, -- 禁用 Tree-sitter 预览
+    timeout = 100, -- 减少预览超时
+  },
+  
   mappings = {
     n = {
       ["<leader>q"] = require("telescope.actions").close,

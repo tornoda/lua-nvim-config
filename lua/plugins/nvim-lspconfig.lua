@@ -59,6 +59,15 @@ local function on_init(client, _)
   if client.supports_method "textDocument/semanticTokens" then
     client.server_capabilities.semanticTokensProvider = nil
   end
+  
+  -- 性能优化：禁用不必要的功能
+  if client.supports_method "textDocument/documentSymbol" then
+    client.server_capabilities.documentSymbolProvider = nil
+  end
+  
+  if client.supports_method "textDocument/foldingRange" then
+    client.server_capabilities.foldingRangeProvider = nil
+  end
 end
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -87,7 +96,14 @@ capabilities.textDocument.foldingRange = {
   lineFoldingOnly = true,
 }
 
-vim.diagnostic.config { virtual_text = false, signs = true }
+-- 性能优化：减少诊断频率
+vim.diagnostic.config { 
+  virtual_text = false, 
+  signs = true,
+  -- 增加诊断更新间隔
+  update_in_insert = false,
+  severity_sort = true,
+}
 
 return {
   {

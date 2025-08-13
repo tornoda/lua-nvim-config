@@ -23,6 +23,8 @@ return {
       highlight = {
         enable = true,
         use_languagetree = true,
+        -- 性能优化：限制高亮行数
+        additional_vim_regex_highlighting = false,
       },
 
       indent = { enable = true },
@@ -36,6 +38,19 @@ return {
           node_decremental = "<bs>",
         },
       },
+
+      -- 性能优化配置
+      playground = {
+        enable = false, -- 禁用 playground 功能
+      },
+      
+      query_linter = {
+        enable = false, -- 禁用查询检查器
+      },
+
+      -- 减少内存使用
+      sync_install = false,
+      auto_install = false,
     }
   end,
 }

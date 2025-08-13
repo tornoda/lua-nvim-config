@@ -94,8 +94,11 @@ return {
         { name = "buffer" },
         { name = "nvim_lua" },
         { name = "path" },
+        { name = "llm" },
         -- { name = "treesitter" },
       },
     }
+
+    require("cmp").register_source("llm", require("llm.source").new())
   end,
 }
