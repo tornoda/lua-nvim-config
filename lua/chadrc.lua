@@ -3,13 +3,13 @@
 ---@type ChadrcConfig
 local M = {
   base46 = {
-    theme = "ashes",
+    theme = "penumbra_dark",
     hl_add = {},
     hl_override = {},
     integrations = {},
     changed_themes = {},
     transparency = false,
-    theme_toggle = { "ashes", "ashes" },
+    theme_toggle = { "penumbra_dark", "penumbra_dark" },
   },
   ui = {
     cmp = {
@@ -93,7 +93,7 @@ local M = {
 
 return M
 -- M.ui = {
---   theme = "ashes",
+--   theme = "penumbra_dark",
 --
 --   telescope = { style = "borderless" }, -- borderless / bordered
 --

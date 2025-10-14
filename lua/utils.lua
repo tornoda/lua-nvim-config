@@ -61,4 +61,17 @@ M.get_color = function(group, attr)
   return fn.synIDattr(fn.synIDtrans(fn.hlID(group)), attr)
 end
 
+M.harmonySetup = function(setup)
+  if vim.g.vscode then
+    -- VSCode extension
+  else
+    -- ordinary Neovim
+    setup()
+  end
+end
+
+M.isVsCode = function ()
+  return vim.g.vscode
+end
+
 return M

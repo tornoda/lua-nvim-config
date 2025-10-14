@@ -42,6 +42,7 @@ local opts = {
   },
   focus = true,
   follow = false,
+  win = { type = "split", size = 25, relative = "editor", position = "bottom" },
 }
 
 local function set_mapping()

@@ -14,6 +14,12 @@ local function set_mappings()
   map({ "n", "v", "i" }, "<leader>df", function()
     vim.api.nvim_command "DiffviewFileHistory %"
   end, { desc = "Diffview Current File History" })
+  map({ "n", "v", "i" }, "<leader>dg", function()
+    vim.api.nvim_command "diffget"
+  end, { desc = "exe :diffget" })
+  map({ "n", "v", "i" }, "<leader>dp", function()
+    vim.api.nvim_command "diffput"
+  end, { desc = "exe :diffput" })
 end
 
 local function set_autocmd()

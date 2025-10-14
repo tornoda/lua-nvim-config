@@ -25,6 +25,10 @@ end, { desc = "blankline jump to current context" })
 local M = {}
 
 M.default = function()
+  -- 所有都当成普通字符
+  -- 如果是\v，则和现代(js)正则很像
+  map("n", "/", "/\\V", { noremap = true })
+  map("n", "?", "?\\V", { noremap = true })
   -- -- map("n", ";", ":", { desc = "CMD enter command mode" })
   -- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")
   -- Comment
@@ -60,7 +64,7 @@ M.default = function()
   map({ "n", "v" }, "<leader>q", "<cmd>q<CR>")
   map("i", ";q", "<ESC>")
   map({ "n", "i", "v", "t" }, "<leader>w", "<cmd>wa<cr>")
-  map({ "n", "i", "v", "t" }, "<leader>bd", "<cmd>bd!<cr>")
+  -- map({ "n", "i", "v", "t" }, "<leader>bd", "<cmd>bd!<cr>")
   map("n", "<leader>1", "1gt")
   map("n", "<leader>2", "2gt")
   map("n", "<leader>3", "3gt")
@@ -71,7 +75,7 @@ M.default = function()
   -- TODO del this
   -- map("n", "<space>", "viw")
 
-  map("n", "<leader>cc", function()
+  map("n", "<leader>cl", function()
     local curWord = vim.fn.expand "<cword>"
     -- local path = vim.fn.expand('<cfile>')
     local line = vim.fn.line "."
@@ -143,6 +147,24 @@ end
 
 -- user custom mappings
 M.extend = function()
+  -- avante.nvim 快捷键配置 - 根据官方文档
+  vim.keymap.set("n", "<leader>ac", "<cmd>AvanteChat<cr>", { desc = "Avante Chat" })
+  vim.keymap.set("n", "<leader>ap", "<cmd>AvantePlanning<cr>", { desc = "Avante Planning" })
+  vim.keymap.set("n", "<leader>ae", "<cmd>AvanteEditing<cr>", { desc = "Avante Editing" })
+  vim.keymap.set("n", "<leader>as", "<cmd>AvanteSuggesting<cr>", { desc = "Avante Suggesting" })
+  vim.keymap.set("n", "<leader>ar", "<cmd>AvanteReviewing<cr>", { desc = "Avante Reviewing" })
+
+  -- 文件选择快捷键
+  vim.keymap.set("n", "<leader>a+", function()
+    local selector = require "avante.selector"
+    selector.add_file()
+  end, { desc = "Avante Add File" })
+
+  vim.keymap.set("n", "<leader>a-", function()
+    local selector = require "avante.selector"
+    selector.remove_file()
+  end, { desc = "Avante Remove File" })
+
   -- gen by chatgpt
   vim.keymap.set("n", "gx", function()
     local file = vim.fn.expand "<cfile>" -- 获取光标下的文件路径

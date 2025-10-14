@@ -19,6 +19,8 @@ return {
         "typescript",
         "tsx",
         "luadoc",
+        "markdown",
+        "markdown_inline",
       },
       highlight = {
         enable = true,

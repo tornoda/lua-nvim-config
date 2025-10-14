@@ -85,7 +85,7 @@ o.backup = false
 o.writebackup = false
 
 -- 优化搜索性能
-o.hlsearch = false
+o.hlsearch = true
 o.incsearch = true
 o.lazyredraw = true
 

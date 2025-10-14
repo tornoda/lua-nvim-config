@@ -6,11 +6,22 @@ return {
     {
       -- snippet plugin
       "L3MON4D3/LuaSnip",
+      version = "v2.*",
       dependencies = "rafamadriz/friendly-snippets",
       opts = { history = true, updateevents = "TextChanged,TextChangedI" },
       config = function(_, opts)
         require("luasnip").config.set_config(opts)
-        require "nvchad.configs.luasnip"
+        -- vscode format
+        require("luasnip.loaders.from_vscode").lazy_load { exclude = vim.g.vscode_snippets_exclude or {} }
+        require("luasnip.loaders.from_vscode").lazy_load { paths = vim.g.vscode_snippets_path or "" }
+
+        -- snipmate format
+        -- require("luasnip.loaders.from_snipmate").load()
+        -- require("luasnip.loaders.from_snipmate").lazy_load { paths = vim.g.snipmate_snippets_path or "" }
+
+        -- lua format
+        -- require("luasnip.loaders.from_lua").load()
+        -- require("luasnip.loaders.from_lua").lazy_load { paths = vim.g.lua_snippets_path or "" }
       end,
     },
 
@@ -38,10 +49,10 @@ return {
       "hrsh7th/cmp-buffer",
       "rasulomaroff/cmp-bufname",
       "uga-rosa/cmp-dictionary",
-      -- "tzachar/cmp-fuzzy-buffer",
       "hrsh7th/cmp-omni",
       "hrsh7th/cmp-path",
       "ray-x/cmp-treesitter",
+      -- "lukas-reineke/cmp-rg",
     },
   },
   config = function()
@@ -67,25 +78,25 @@ return {
           select = true,
         },
 
-        -- ["<Tab>"] = cmp.mapping(function(fallback)
-        --   if cmp.visible() then
-        --     cmp.select_next_item()
-        --   elseif require("luasnip").expand_or_jumpable() then
-        --     require("luasnip").expand_or_jump()
-        --   else
-        --     fallback()
-        --   end
-        -- end, { "i", "s" }),
+        ["<Tab>"] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+            cmp.select_next_item()
+          elseif require("luasnip").expand_or_jumpable() then
+            require("luasnip").expand_or_jump()
+          else
+            fallback()
+          end
+        end, { "i", "s" }),
 
-        -- ["<S-Tab>"] = cmp.mapping(function(fallback)
-        --   if cmp.visible() then
-        --     cmp.select_prev_item()
-        --   elseif require("luasnip").jumpable(-1) then
-        --     require("luasnip").jump(-1)
-        --   else
-        --     fallback()
-        --   end
-        -- end, { "i", "s" }),
+        ["<S-Tab>"] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+            cmp.select_prev_item()
+          elseif require("luasnip").jumpable(-1) then
+            require("luasnip").jump(-1)
+          else
+            fallback()
+          end
+        end, { "i", "s" }),
       },
 
       sources = {
@@ -94,11 +105,8 @@ return {
         { name = "buffer" },
         { name = "nvim_lua" },
         { name = "path" },
-        { name = "llm" },
-        -- { name = "treesitter" },
+        -- { name = "rg" },
       },
     }
-
-    require("cmp").register_source("llm", require("llm.source").new())
   end,
 }

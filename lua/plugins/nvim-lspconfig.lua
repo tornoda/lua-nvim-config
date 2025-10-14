@@ -48,7 +48,16 @@ local lspconfig = require "lspconfig"
 -- 记得装server:
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
 -- 直接MasonInstallAll, 就可以把这里的都装上, 还会把mason配置里面的装上
-local servers = { "html", "cssls", "ts_ls", "emmet_ls", "cssmodules_ls", "css_variables", "eslint", "stylelint_lsp" }
+local servers = {
+  "html",
+  "cssls",
+  "emmet_ls",
+  "cssmodules_ls",
+  "css_variables",
+  "stylelint_lsp",
+  -- "eslint", -- ESLint LSP
+  "ts_ls", -- TypeScript LSP
+}
 
 local function on_attach(_, bufnr)
   set_mappings(bufnr)
@@ -59,12 +68,13 @@ local function on_init(client, _)
   if client.supports_method "textDocument/semanticTokens" then
     client.server_capabilities.semanticTokensProvider = nil
   end
-  
+
   -- 性能优化：禁用不必要的功能
-  if client.supports_method "textDocument/documentSymbol" then
-    client.server_capabilities.documentSymbolProvider = nil
-  end
-  
+  -- Note: documentSymbolProvider is needed for symbol navigation
+  -- if client.supports_method "textDocument/documentSymbol" then
+  --   client.server_capabilities.documentSymbolProvider = nil
+  -- end
+
   if client.supports_method "textDocument/foldingRange" then
     client.server_capabilities.foldingRangeProvider = nil
   end
@@ -97,8 +107,8 @@ capabilities.textDocument.foldingRange = {
 }
 
 -- 性能优化：减少诊断频率
-vim.diagnostic.config { 
-  virtual_text = false, 
+vim.diagnostic.config {
+  virtual_text = false,
   signs = true,
   -- 增加诊断更新间隔
   update_in_insert = false,

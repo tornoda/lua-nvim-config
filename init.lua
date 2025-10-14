@@ -1,59 +1,63 @@
-require "neovide"
-
 vim.g.mapleader = ";"
-vim.g.base46_cache = vim.fn.stdpath "data" .. "/base46/"
+if vim.g.vscode then
+  require "mappings-vscode"
+else
+  require "neovide"
 
--- bootstrap lazy and all plugins
-local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
+  vim.g.base46_cache = vim.fn.stdpath "data" .. "/base46/"
 
-if not vim.loop.fs_stat(lazypath) then
-  local repo = "https://github.com/folke/lazy.nvim.git"
-  vim.fn.system { "git", "clone", "--filter=blob:none", repo, "--branch=stable", lazypath }
+  -- bootstrap lazy and all plugins
+  local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
+
+  if not vim.loop.fs_stat(lazypath) then
+    local repo = "https://github.com/folke/lazy.nvim.git"
+    vim.fn.system { "git", "clone", "--filter=blob:none", repo, "--branch=stable", lazypath }
+  end
+
+  vim.opt.rtp:prepend(lazypath)
+
+  local lazy_config = require "configs.lazy"
+
+  -- load plugins
+  require("lazy").setup({
+    {
+      "NvChad/NvChad",
+      lazy = false,
+      branch = "v2.5",
+      import = "nvchad.plugins",
+    },
+
+    -- loading lua/plugins
+    { import = "plugins" },
+  }, lazy_config)
+
+  -- (method 2, for non lazyloaders) to load all highlights at once
+  -- for _, v in ipairs(vim.fn.readdir(vim.g.base46_cache)) do
+  --   dofile(vim.g.base46_cache .. v)
+  -- end
+
+  -- -- load theme
+  -- dofile(vim.g.base46_cache .. "syntax")
+  -- dofile(vim.g.base46_cache .. "defaults")
+  -- -- print("vim.g.base46_cache" .. vim.g.base46_cache)
+  -- dofile(vim.g.base46_cache .. "statusline")
+  --
+  --
+  for _, v in ipairs(vim.fn.readdir(vim.g.base46_cache)) do
+    dofile(vim.g.base46_cache .. v)
+  end
+
+  -- require "nvchad.autocmds"
+
+  -- 异步加载非关键模块，提升启动速度
+  vim.schedule(function()
+    require "options"
+    require "mappings"
+  end)
+
+  -- 延迟加载其他模块，避免阻塞启动
+  vim.defer_fn(function()
+    require "autocmds"
+    require "cmds"
+  end, 100)
 end
-
-vim.opt.rtp:prepend(lazypath)
-
-local lazy_config = require "configs.lazy"
-
--- load plugins
-require("lazy").setup({
-  {
-    "NvChad/NvChad",
-    lazy = false,
-    branch = "v2.5",
-    import = "nvchad.plugins",
-  },
-
-  -- loading lua/plugins
-  { import = "plugins" },
-}, lazy_config)
-
--- (method 2, for non lazyloaders) to load all highlights at once
--- for _, v in ipairs(vim.fn.readdir(vim.g.base46_cache)) do
---   dofile(vim.g.base46_cache .. v)
--- end
-
--- -- load theme
--- dofile(vim.g.base46_cache .. "syntax")
--- dofile(vim.g.base46_cache .. "defaults")
--- -- print("vim.g.base46_cache" .. vim.g.base46_cache)
--- dofile(vim.g.base46_cache .. "statusline")
---
---
-for _, v in ipairs(vim.fn.readdir(vim.g.base46_cache)) do
-  dofile(vim.g.base46_cache .. v)
-end
-
--- require "nvchad.autocmds"
-
--- 异步加载非关键模块，提升启动速度
-vim.schedule(function()
-  require "options"
-  require "mappings"
-end)
-
--- 延迟加载其他模块，避免阻塞启动
-vim.defer_fn(function()
-  require "autocmds"
-  require "cmds"
-end, 100)

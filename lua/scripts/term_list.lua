@@ -1,12 +1,12 @@
 -- 定义你的候选项
 local options = {
-  "git add . && git commit -m ''",
-  "git add . && git commit -m 'chore: version change' \n",
   "git checkout -b",
   "git open \n",
   "git rebase --continue \n",
   "npm publish \n",
   "npm publish --tag beta \n",
+  "git add . && git commit -m ''",
+  "git add . && git commit -m 'chore: version change' \n",
 }
 
 local M = {}
