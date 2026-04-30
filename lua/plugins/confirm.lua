@@ -1,13 +1,8 @@
-local function set_mapping()
-  local map = vim.keymap.set
-  map("n", "<leader>fm", function()
-    require("conform").format { lsp_fallback = true }
-  end, { desc = "Format files" })
-end
+-- Conform keymaps have been moved to lua/keymaps.lua
 
 return {
   "stevearc/conform.nvim",
-  event = "BufWritePre", -- uncomment for format on save
+  -- event = "BufWritePre", -- uncomment for format on save (disabled)
   config = function()
     require("conform").setup {
       formatters_by_ft = {
@@ -27,6 +22,5 @@ return {
       --   quiet = true,
       -- },
     }
-    set_mapping()
   end,
 }

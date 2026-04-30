@@ -5,17 +5,6 @@
 vim.fn.sign_define("DapBreakpoint", { text = "🟥", texthl = "", linehl = "", numhl = "" })
 vim.fn.sign_define("DapStopped", { text = "▶️", texthl = "", linehl = "", numhl = "" })
 
-local function set_mappings()
-  vim.keymap.set("n", "<F5>", require("dap").continue)
-  vim.keymap.set("n", "<F10>", require("dap").step_over)
-  vim.keymap.set("n", "<F11>", require("dap").step_into)
-  vim.keymap.set("n", "<F12>", require("dap").step_out)
-  -- vim.keymap.set("n", "<leader>b", require("dap").toggle_breakpoint)
-  vim.keymap.set("n", "<leader>B", function()
-    require("dap").set_breakpoint(vim.fn.input "Breakpoint condition: ")
-  end)
-end
-
 local function register_dap()
   require("dap").adapters["pwa-node"] = {
     type = "server",
@@ -81,15 +70,27 @@ return {
   --   lazy = false,
   --   build = "npm install --legacy-peer-deps && npx gulp vsDebugServerBundle && mv dist out",
   -- },
-  {
-    "mfussenegger/nvim-dap",
-    lazy = false,
-    config = function()
-      register_dap()
-      config_dap()
-      set_mappings()
-    end,
-  },
+    {
+      "mfussenegger/nvim-dap",
+      cmd = { "DapContinue", "DapTerminate", "DapToggleBreakpoint", "DapStepOver", "DapStepInto", "DapStepOut" },
+      keys = {
+        { "<F5>", function() require("dap").continue() end, desc = "DAP Continue" },
+        { "<F10>", function() require("dap").step_over() end, desc = "DAP Step Over" },
+        { "<F11>", function() require("dap").step_into() end, desc = "DAP Step Into" },
+        { "<F12>", function() require("dap").step_out() end, desc = "DAP Step Out" },
+        {
+          "<leader>B",
+          function()
+            require("dap").set_breakpoint(vim.fn.input "Breakpoint condition: ")
+          end,
+          desc = "DAP Conditional Breakpoint",
+        },
+      },
+      config = function()
+        register_dap()
+        config_dap()
+      end,
+    },
   -- {
   --   lazy = false,
   --   "mxsdev/nvim-dap-vscode-js",

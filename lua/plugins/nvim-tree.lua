@@ -1,7 +1,18 @@
 local map = vim.keymap.set
 
+local function focus_tree()
+  local view = require "nvim-tree.view"
+  local api = require "nvim-tree.api"
+
+  if view.is_visible() then
+    view.focus()
+  else
+    api.tree.open()
+  end
+end
+
 map("n", "<C-n>", "<cmd>NvimTreeToggle<CR>", { desc = "nvimtree toggle window" })
-map("n", "<leader>e", "<cmd>NvimTreeFocus<CR>", { desc = "nvimtree focus window" })
+map("n", "<leader>e", focus_tree, { desc = "nvimtree focus window" })
 
 local function set_mappings(bufnr)
   local api = require "nvim-tree.api"
@@ -72,12 +83,12 @@ end
 
 return {
   "nvim-tree/nvim-tree.lua",
-  lazy = false,
+  lazy = true, -- Change to lazy loading to avoid empty buffer on startup
   cmd = { "NvimTreeToggle", "NvimTreeFocus" },
   opts = {
     view = {
       centralize_selection = true,
-      width = 30,
+      width = 40,
       preserve_window_proportions = true,
     },
     renderer = {
@@ -100,23 +111,31 @@ return {
     sync_root_with_cwd = false,
     respect_buf_cwd = false,
     update_focused_file = {
-      enable = true,  -- 禁用自动聚焦更新
+      enable = true, -- 禁用自动聚焦更新
       update_root = false,
+      ignore_list = {
+        "node_modules",
+        ".git",
+        ".cache",
+        "dist",
+        "build",
+        "coverage",
+      },
     },
   },
   config = function(_, opts)
     require("nvim-tree").setup(opts)
-    
+
     -- 额外的保护措施：确保nvim-tree不会改变工作目录
     local api = require("nvim-tree.api")
-    
+
     -- 重写change_root_to_node函数，防止改变工作目录
     local original_change_root = api.tree.change_root_to_node
     api.tree.change_root_to_node = function()
       -- 不执行改变根目录的操作
       vim.notify("已禁用自动改变根目录功能", vim.log.levels.INFO)
     end
-    
+
     -- 重写change_root_to_parent函数
     local original_change_parent = api.tree.change_root_to_parent
     api.tree.change_root_to_parent = function()
@@ -124,4 +143,27 @@ return {
       vim.notify("已禁用自动改变根目录功能", vim.log.levels.INFO)
     end
   end,
+  -- Export functions for keymaps.lua
+  extra = {
+    toggle = function()
+      vim.cmd "NvimTreeToggle"
+    end,
+    focus = focus_tree,
+    -- Get the path of current node under cursor (relative to workspace)
+    get_path = function()
+      local api = require "nvim-tree.api"
+      local node = api.tree.get_node_under_cursor()
+      if node then
+        local abs_path = node.absolute_path
+        local cwd = vim.fn.getcwd()
+        -- Remove the cwd prefix to get relative path
+        if abs_path:sub(1, #cwd) == cwd then
+          local rel_path = abs_path:sub(#cwd + 2) -- +2 to skip the trailing slash
+          return rel_path
+        end
+        return abs_path -- fallback to absolute path if not in workspace
+      end
+      return nil
+    end,
+  },
 }

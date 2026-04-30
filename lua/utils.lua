@@ -70,8 +70,47 @@ M.harmonySetup = function(setup)
   end
 end
 
-M.isVsCode = function ()
+M.isVsCode = function()
   return vim.g.vscode
+end
+
+-- Get selected text in visual mode
+M.get_visual_selection = function()
+  -- Yank to temporary register
+  vim.cmd [[noautocmd sil norm! "vy]]
+  local text = vim.fn.getreg "v"
+  return text
+end
+
+-- Generate coordinates string for line selection (path:startLine:endLine)
+M.get_selection_coordinates = function()
+  local mode = vim.fn.mode()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local filepath = vim.api.nvim_buf_get_name(bufnr)
+
+  -- Get relative path to workspace
+  local cwd = vim.fn.getcwd()
+  local rel_path = filepath
+  if filepath:sub(1, #cwd) == cwd then
+    rel_path = filepath:sub(#cwd + 2) -- +2 to skip the trailing slash
+  end
+
+  local start_line, end_line
+
+  if mode == "v" or mode == "V" or mode == "\22" then -- visual modes
+    -- Get visual selection range
+    local start_pos = vim.fn.getpos("v")
+    local end_pos = vim.fn.getpos(".")
+    start_line = math.min(start_pos[2], end_pos[2])
+    end_line = math.max(start_pos[2], end_pos[2])
+  else
+    -- Normal mode: use current line as both start and end
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    start_line = cursor[1]
+    end_line = cursor[1]
+  end
+
+  return string.format("%s:%d:%d", rel_path, start_line, end_line)
 end
 
 return M

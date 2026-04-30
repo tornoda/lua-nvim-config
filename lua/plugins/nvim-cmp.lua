@@ -1,7 +1,6 @@
 return {
   "hrsh7th/nvim-cmp",
   event = "InsertEnter",
-  lazy = false,
   dependencies = {
     {
       -- snippet plugin
@@ -58,6 +57,69 @@ return {
   config = function()
     local cmp = require "cmp"
 
+    local function get_bufnrs_by_filetype(filetypes)
+      local filetype_set = {}
+      for _, filetype in ipairs(filetypes) do
+        filetype_set[filetype] = true
+      end
+
+      local bufnrs = {}
+
+      for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+        if vim.api.nvim_buf_is_loaded(bufnr) then
+          local ft = vim.api.nvim_get_option_value("filetype", { buf = bufnr })
+          if filetype_set[ft] then
+            table.insert(bufnrs, bufnr)
+          end
+        end
+      end
+
+      return bufnrs
+    end
+
+    local function get_opencode_output_bufnrs()
+      return get_bufnrs_by_filetype({ "opencode_output" })
+    end
+
+    local function get_existing_dictionary_paths()
+      local candidate_paths = {
+        vim.fn.stdpath("data") .. "/lazy/cmp-dictionary/data/words",
+        "/usr/share/dict/words",
+      }
+      local paths = {}
+
+      for _, path in ipairs(candidate_paths) do
+        if vim.fn.filereadable(path) == 1 then
+          table.insert(paths, path)
+        end
+      end
+
+      return paths
+    end
+
+    local source_tags = {
+      buffer = "[OUTPUT]",
+      dictionary = "[WORD]",
+      nvim_lsp = "[LSP]",
+      path = "[PATH]",
+      luasnip = "[SNIP]",
+    }
+
+    local function format_opencode_completion(entry, vim_item)
+      vim_item.kind = ""
+      vim_item.menu = source_tags[entry.source.name] or ("[" .. entry.source.name .. "]")
+      return vim_item
+    end
+
+    local ok_dictionary, cmp_dictionary = pcall(require, "cmp_dictionary")
+    if ok_dictionary then
+      cmp_dictionary.setup({
+        paths = get_existing_dictionary_paths(),
+        exact_length = 2,
+        first_case_insensitive = true,
+      })
+    end
+
     cmp.setup {
       completion = { completeopt = "menu,menuone" },
       snippet = {
@@ -108,5 +170,28 @@ return {
         -- { name = "rg" },
       },
     }
+
+    cmp.setup.filetype({ "opencode", "opencode_output" }, {
+      sources = cmp.config.sources({
+        { name = "nvim_lsp" },
+        { name = "path" },
+        {
+          name = "dictionary",
+          keyword_length = 2,
+        },
+        {
+          name = "buffer",
+          keyword_length = 2,
+          option = {
+            get_bufnrs = get_opencode_output_bufnrs,
+          },
+        },
+      }, {
+        { name = "luasnip" },
+      }),
+      formatting = {
+        format = format_opencode_completion,
+      },
+    })
   end,
 }

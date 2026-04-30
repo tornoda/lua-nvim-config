@@ -16,58 +16,32 @@ create_cmd("ReloadDiagnostic", function()
   print "诊断和 Tree-sitter 已重新加载 🌳✨"
 end, {})
 
-local function set_mappings(bufnr)
-  bufnr = bufnr or 0
-  local function opts(desc)
-    return { buffer = bufnr, desc = "LSP " .. desc }
-  end
-  map("n", "gri", vim.lsp.buf.implementation, opts "Go to implementation")
-  map("n", "grr", vim.lsp.buf.references, opts "Show references")
-  map("n", "grn", function()
-    vim.lsp.buf.rename()
-    -- require "nvchad.lsp.renamer"()
-  end, opts "NvRenamer")
-  map("n", "grd", vim.lsp.buf.type_definition, opts "Go to type definition")
-  map("n", "grD", vim.lsp.buf.declaration, opts "Go to declaration")
-  map("n", "gre", vim.diagnostic.open_float, opts "Show diagnostics")
+-- LSP keymaps have been moved to lua/keymaps.lua
 
-  -- map("n", "<leader>sh", vim.lsp.buf.signature_help, opts "Show signature help")
-  map("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, opts "Add workspace folder")
-  map("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder, opts "Remove workspace folder")
-
-  map("n", "<leader>wl", function()
-    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, opts "List workspace folders")
-
-  map({ "n", "v" }, "<leader>a", vim.lsp.buf.code_action)
-  map("n", "[e", vim.diagnostic.goto_prev)
-  map("n", "]e", vim.diagnostic.goto_next)
-end
-
-local lspconfig = require "lspconfig"
 -- 记得装server:
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
 -- 直接MasonInstallAll, 就可以把这里的都装上, 还会把mason配置里面的装上
 local servers = {
-  "html",
+  -- "html",
   "cssls",
-  "emmet_ls",
-  "cssmodules_ls",
-  "css_variables",
-  "stylelint_lsp",
+  -- "emmet_ls",
+  -- "cssmodules_ls",
+  -- "css_variables",
+  -- "stylelint_lsp",
   -- "eslint", -- ESLint LSP
   "ts_ls", -- TypeScript LSP
+  -- "vtsls"
 }
 
 local function on_attach(_, bufnr)
-  set_mappings(bufnr)
+  -- LSP keymaps are now handled in lua/keymaps.lua
 end
 
 -- disable semanticTokens
 local function on_init(client, _)
-  if client.supports_method "textDocument/semanticTokens" then
-    client.server_capabilities.semanticTokensProvider = nil
-  end
+  -- if client.supports_method "textDocument/semanticTokens" then
+  --   client.server_capabilities.semanticTokensProvider = nil
+  -- end
 
   -- 性能优化：禁用不必要的功能
   -- Note: documentSymbolProvider is needed for symbol navigation
@@ -75,9 +49,9 @@ local function on_init(client, _)
   --   client.server_capabilities.documentSymbolProvider = nil
   -- end
 
-  if client.supports_method "textDocument/foldingRange" then
-    client.server_capabilities.foldingRangeProvider = nil
-  end
+  -- if client.supports_method "textDocument/foldingRange" then
+  --   client.server_capabilities.foldingRangeProvider = nil
+  -- end
 end
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -118,26 +92,47 @@ vim.diagnostic.config {
 return {
   {
     "williamboman/mason.nvim",
-    lazy = false,
+    cmd = "Mason",
+    event = "VeryLazy",
     opts = {},
   },
   {
     "neovim/nvim-lspconfig",
+    event = { "BufReadPre", "BufNewFile" },
     config = function()
-      -- lsps with default config
-      for _, lsp in ipairs(servers) do
-        lspconfig[lsp].setup {
-          on_attach = on_attach,
-          on_init = on_init,
-          capabilities = capabilities,
-        }
+      local function setup_server(server, opts)
+        local base_opts = vim.tbl_deep_extend(
+          "force",
+          {
+            on_attach = on_attach,
+            on_init = on_init,
+            capabilities = capabilities,
+          },
+          opts or {}
+        )
+
+        if vim.lsp and vim.lsp.config then
+          vim.lsp.config(server, base_opts)
+          vim.lsp.enable(server)
+        else
+          -- Fallback for pre-0.11 Neovim (deprecated path)
+          require("lspconfig")[server].setup(base_opts)
+        end
       end
 
-      lspconfig.lua_ls.setup {
-        on_attach = on_attach,
-        capabilities = capabilities,
-        on_init = on_init,
+      for _, lsp in ipairs(servers) do
+        if lsp == "ts_ls" then
+          setup_server(lsp, {
+            init_options = {
+              maxTsServerMemory = 1024 * 6, -- 2GB in MB to keep memory usage reasonable
+            },
+          })
+        else
+          setup_server(lsp)
+        end
+      end
 
+      setup_server("lua_ls", {
         settings = {
           Lua = {
             diagnostics = {
@@ -156,7 +151,7 @@ return {
             },
           },
         },
-      }
+      })
     end,
   },
 }

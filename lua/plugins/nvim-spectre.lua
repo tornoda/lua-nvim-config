@@ -1,20 +1,7 @@
 local utils = require "utils"
 local map = vim.keymap.set
 
-map("n", "gF", function()
-  require("spectre").open {
-    is_insert_mode = true,
-    -- the directory where the search tool will be started in
-    -- cwd = "~/.config/nvim",
-    search_text = utils.get_current_word(),
-    -- replace_text = "test",
-    -- the pattern of files to consider for searching
-    -- path = "lua/**/*.lua",
-    -- the directories or files to search in
-    -- search_paths = { "lua/", "plugin/" },
-    is_close = true, -- close an exists instance of spectre and open new
-  }
-end)
+-- Spectre keymaps have been moved to lua/keymaps.lua
 return {
   "nvim-pack/nvim-spectre",
   cmd = { "Spectre" },
@@ -29,4 +16,15 @@ return {
       },
     }
   end,
+  -- Export functions for keymaps.lua
+  extra = {
+    open_search_replace = function()
+      local utils = require "utils"
+      require("spectre").open {
+        is_insert_mode = true,
+        search_text = utils.get_current_word(),
+        is_close = true,
+      }
+    end,
+  },
 }

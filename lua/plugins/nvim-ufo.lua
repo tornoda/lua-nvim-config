@@ -1,16 +1,16 @@
 -- https://github.com/kevinhwang91/nvim-ufo
--- do
---   return {}
--- end
+do
+  return {}
+end
 
 return {
   "kevinhwang91/nvim-ufo",
-  lazy = false,
+  event = "BufReadPost",
   dependencies = { "kevinhwang91/promise-async" },
   config = function()
     -- vim.o.foldcolumn = "1" -- '0' is not bad
-    vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
-    vim.o.foldlevelstart = 99
+    vim.o.foldlevel = 20 -- Keep folds expandable without forcing extremely deep parsing
+    vim.o.foldlevelstart = 5
     vim.o.foldenable = true
 
     -- Using ufo provider need remap `zR` and `zM`. If Neovim is 0.6.1, remap yourself

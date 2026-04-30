@@ -1,17 +1,21 @@
-local function set_mappings()
-  local map = vim.keymap.set
-  map("n", "[c", "<cmd>Gitsigns prev_hunk<CR>")
-  map("n", "]c", "<cmd>Gitsigns next_hunk<CR>")
-end
+-- Gitsigns keymaps have been moved to lua/keymaps.lua
 
 return {
   "lewis6991/gitsigns.nvim",
-  lazy = false,
+  event = { "BufReadPre", "BufNewFile" },
   opts = function()
     return require "nvchad.configs.gitsigns"
   end,
   config = function(_, opts)
     require("gitsigns").setup(opts)
-    set_mappings()
   end,
+  -- Export functions for keymaps.lua
+  extra = {
+    next_hunk = function()
+      vim.cmd "Gitsigns next_hunk"
+    end,
+    prev_hunk = function()
+      vim.cmd "Gitsigns prev_hunk"
+    end,
+  },
 }

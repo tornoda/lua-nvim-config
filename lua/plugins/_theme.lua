@@ -1,8 +1,8 @@
-local function set_mapping()
-  local map = vim.keymap.set
-  map("n", "<leader>th", function()
+local function set_command()
+  -- Create command to open NvChad theme selector
+  vim.api.nvim_create_user_command("Themes", function()
     require("nvchad.themes").open()
-  end, { desc = "Nvchad themes" })
+  end, { desc = "Open NvChad theme selector" })
 end
 return {
   {
@@ -18,7 +18,7 @@ return {
       require("base46").load_all_highlights()
     end,
     config = function()
-      set_mapping()
+      set_command()
     end,
   },
   "nvchad/volt",

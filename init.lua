@@ -41,18 +41,23 @@ else
   -- dofile(vim.g.base46_cache .. "defaults")
   -- -- print("vim.g.base46_cache" .. vim.g.base46_cache)
   -- dofile(vim.g.base46_cache .. "statusline")
-  --
-  --
-  for _, v in ipairs(vim.fn.readdir(vim.g.base46_cache)) do
-    dofile(vim.g.base46_cache .. v)
-  end
+    --
+    -- Base46 highlights are already precompiled via the plugin build step; skip scanning the whole cache directory
+    local base46_theme = vim.g.base46_cache .. "defaults"
+    if vim.fn.filereadable(base46_theme) == 1 then
+      dofile(base46_theme)
+      pcall(dofile, vim.g.base46_cache .. "statusline")
+      pcall(dofile, vim.g.base46_cache .. "highlights")
+    end
 
   -- require "nvchad.autocmds"
 
+  -- Load core options synchronously to avoid marking initial buffer as modified
+  require "options"
+
   -- 异步加载非关键模块，提升启动速度
   vim.schedule(function()
-    require "options"
-    require "mappings"
+    require "keymaps"  -- Load unified keymaps (includes all mappings)
   end)
 
   -- 延迟加载其他模块，避免阻塞启动

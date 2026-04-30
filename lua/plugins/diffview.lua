@@ -1,26 +1,6 @@
 local func = require "func"
 
-local function set_mappings()
-  local map = vim.keymap.set
-  map({ "n", "v", "i" }, "<leader>do", function()
-    vim.api.nvim_command "DiffviewOpen"
-  end, { desc = "Diffview Open" })
-  map({ "n", "v", "i" }, "<leader>dc", function()
-    vim.api.nvim_command "DiffviewClose"
-  end, { desc = "Diffview Close" })
-  map({ "n", "v", "i" }, "<leader>dh", function()
-    vim.api.nvim_command "DiffviewFileHistory"
-  end, { desc = "Diffview File History" })
-  map({ "n", "v", "i" }, "<leader>df", function()
-    vim.api.nvim_command "DiffviewFileHistory %"
-  end, { desc = "Diffview Current File History" })
-  map({ "n", "v", "i" }, "<leader>dg", function()
-    vim.api.nvim_command "diffget"
-  end, { desc = "exe :diffget" })
-  map({ "n", "v", "i" }, "<leader>dp", function()
-    vim.api.nvim_command "diffput"
-  end, { desc = "exe :diffput" })
-end
+-- Diffview keymaps have been moved to lua/keymaps.lua
 
 local function set_autocmd()
   local create_cmd = vim.api.nvim_create_user_command
@@ -64,6 +44,58 @@ local color_scheme_attached = false
 -- 控制是否启用 custom preview line
 local enable_custom_hl = false
 
+local function refresh_view(view)
+  local ok_diff, DiffView = pcall(require, "diffview.scene.views.diff.diff_view")
+  local ok_history, FileHistoryView = pcall(require, "diffview.scene.views.file_history.file_history_view")
+
+  if ok_diff and view:instanceof(DiffView.DiffView) then
+    vim.schedule(function()
+      view:update_files()
+    end)
+    return
+  end
+
+  if ok_history and view:instanceof(FileHistoryView.FileHistoryView) then
+    vim.schedule(function()
+      view.panel:update_entries(function(_, status)
+        if status >= require("diffview.vcs.utils").JobStatus.ERROR then
+          return
+        end
+
+        if not view:cur_file() then
+          view:next_item()
+        end
+      end)
+    end)
+  end
+end
+
+local function focus_existing_diffview(view_class)
+  local ok_lib, lib = pcall(require, "diffview.lib")
+  if not ok_lib then
+    return false
+  end
+
+  for _, view in ipairs(lib.views or {}) do
+    if view:instanceof(view_class) and view.tabpage and vim.api.nvim_tabpage_is_valid(view.tabpage) then
+      vim.api.nvim_set_current_tabpage(view.tabpage)
+      refresh_view(view)
+      return true
+    end
+  end
+
+  return false
+end
+
+local function has_current_view()
+  local ok_lib, lib = pcall(require, "diffview.lib")
+  if not ok_lib then
+    return false
+  end
+
+  return lib.get_current_view() ~= nil
+end
+
 -- 统一管理设置
 local function update_preview_line()
   if enable_custom_hl then
@@ -106,9 +138,10 @@ end
 
 return {
   "sindrets/diffview.nvim",
-  lazy = false,
-  -- cmd = { "DiffviewOpen", "DiffviewFileHistory" },
+  cmd = { "DiffviewOpen", "DiffviewFileHistory", "DiffviewFocusFiles", "DiffviewClose" },
   config = function()
+    local actions = require "diffview.actions"
+
     require("diffview").setup {
       enhanced_diff_hl = false,
       file_panel = {
@@ -122,12 +155,32 @@ return {
         view_enter = func.setColor,
         view_opened = func.setColor,
       },
+      keymaps = {
+        view = {
+          { "n", "<leader>b", false },
+          { "n", "<leader>e", false },
+          { "n", "<leader>db", actions.toggle_files, { desc = "Toggle the file panel." } },
+          { "n", "<leader>de", actions.focus_files, { desc = "Bring focus to the file panel" } },
+        },
+        file_panel = {
+          { "n", "<leader>b", false },
+          { "n", "<leader>e", false },
+          { "n", "<leader>db", actions.toggle_files, { desc = "Toggle the file panel" } },
+          { "n", "<leader>de", actions.focus_files, { desc = "Bring focus to the file panel" } },
+        },
+        file_history_panel = {
+          { "n", "<leader>b", false },
+          { "n", "<leader>e", false },
+          { "n", "<leader>db", actions.toggle_files, { desc = "Toggle the file panel" } },
+          { "n", "<leader>de", actions.focus_files, { desc = "Bring focus to the file panel" } },
+        },
+      },
       view = {
         default = {
           -- Config for changed files, and staged files in diff views.
           layout = "diff2_horizontal",
           disable_diagnostics = false, -- Temporarily disable diagnostics for diff buffers while in the view.
-          winbar_info = true, -- See |diffview-config-view.x.winbar_info|
+          winbar_info = true,          -- See |diffview-config-view.x.winbar_info|
         },
         merge_tool = {
           layout = "diff4_mixed",
@@ -135,8 +188,44 @@ return {
       },
     }
 
-    set_mappings()
     set_autocmd()
     func.setColor()
   end,
+  -- Export functions for keymaps.lua
+  extra = {
+    open = function()
+      local DiffView = require("diffview.scene.views.diff.diff_view").DiffView
+      if not focus_existing_diffview(DiffView) then
+        vim.api.nvim_command "DiffviewOpen"
+      end
+    end,
+    close = function()
+      vim.api.nvim_command "DiffviewClose"
+    end,
+    file_history = function()
+      local FileHistoryView = require("diffview.scene.views.file_history.file_history_view").FileHistoryView
+      if not focus_existing_diffview(FileHistoryView) then
+        vim.api.nvim_command "DiffviewFileHistory"
+      end
+    end,
+    current_file_history = function()
+      local FileHistoryView = require("diffview.scene.views.file_history.file_history_view").FileHistoryView
+      if not focus_existing_diffview(FileHistoryView) then
+        vim.api.nvim_command "DiffviewFileHistory %"
+      end
+    end,
+    has_current_view = has_current_view,
+    toggle_files = function()
+      vim.api.nvim_command "DiffviewToggleFiles"
+    end,
+    focus_files = function()
+      vim.api.nvim_command "DiffviewFocusFiles"
+    end,
+    diffget = function()
+      vim.api.nvim_command "diffget"
+    end,
+    diffput = function()
+      vim.api.nvim_command "diffput"
+    end,
+  },
 }

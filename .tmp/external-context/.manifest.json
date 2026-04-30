@@ -1,0 +1,22 @@
+{
+  "libraries": {
+    "avante.nvim": [
+      {
+        "filename": "installation-and-providers.md",
+        "topic": "installation, dependencies, build, ACP, providers",
+        "tech_stack": "Neovim / lazy.nvim",
+        "fetched": "2026-04-12T00:00:00Z",
+        "source": "Context7 API + official docs"
+      }
+    ],
+    "opencode.nvim": [
+      {
+        "filename": "opencode-integration-notes.md",
+        "topic": "integration notes for avante/opencode",
+        "tech_stack": "Neovim",
+        "fetched": "2026-04-12T00:00:00Z",
+        "source": "official docs"
+      }
+    ]
+  }
+}

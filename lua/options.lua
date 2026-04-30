@@ -2,12 +2,23 @@ local opt = vim.opt
 local o = vim.o
 local g = vim.g
 
+-------------------------------------- encoding ----------------------------------------
+-- Set encoding to UTF-8 to prevent garbled text
+vim.scriptencoding = "utf-8"
+o.encoding = "utf-8"
+o.fileencoding = "utf-8"
+-- Try these encodings when opening files
+opt.fileencodings = { "utf-8", "ucs-bom", "gb18030", "gbk", "gb2312", "cp936" }
+-- Set file format (unix, dos, mac)
+opt.fileformats = { "unix", "dos", "mac" }
+
 -------------------------------------- globals -----------------------------------------
 g.toggle_theme_icon = "   "
 
 -------------------------------------- options ------------------------------------------
 o.laststatus = 3
 o.showmode = false
+o.showtabline = 0
 
 o.clipboard = "unnamedplus"
 -- o.cursorcolumn = true
@@ -52,7 +63,10 @@ opt.whichwrap:append "<>[]hl"
 
 -- see https://vim.fandom.com/wiki/Keep_your_cursor_centered_vertically_on_the_screen to become a pro
 opt.scrolloff = 4
-opt.wrap = false
+opt.wrap = true
+opt.linebreak = true
+opt.breakindent = true
+opt.showbreak = "↪ "
 -- opt.autoindent = false
 
 -- opt.foldminlines = 2
@@ -130,5 +144,5 @@ o.formatexpr = "v:lua.vim.lsp.formatexpr()"
 o.indentexpr = "v:lua.vim.lsp.indentexpr()"
 
 -- 优化诊断显示
-o.updatetime = 500  -- 减少诊断更新频率
-o.signcolumn = "yes"  -- 显示诊断标记列
+o.updatetime = 500   -- 减少诊断更新频率
+o.signcolumn = "yes" -- 显示诊断标记列

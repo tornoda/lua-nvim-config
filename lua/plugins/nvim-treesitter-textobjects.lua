@@ -1,11 +1,18 @@
 local function setupRepeat()
   local ts_repeat_move = require "nvim-treesitter.textobjects.repeatable_move"
 
-  -- vim way: ; goes to the direction you were moving.
-  vim.keymap.set({ "n", "x", "o" }, ";", ts_repeat_move.repeat_last_move)
-  vim.keymap.set({ "n", "x", "o" }, ",", ts_repeat_move.repeat_last_move_opposite)
+  local repeat_key = ";"
+  if vim.g.mapleader == ";" then
+    repeat_key = "<leader><leader>"
+  end
 
-  -- Optionally, make builtin f, F, t, T also repeatable with ; and ,
+  -- vim way: repeat last move in the same direction
+  vim.keymap.set({ "n", "x", "o" }, repeat_key, ts_repeat_move.repeat_last_move,
+    { desc = "repeat last treesitter move" })
+  vim.keymap.set({ "n", "x", "o" }, ",", ts_repeat_move.repeat_last_move_opposite,
+    { desc = "repeat last treesitter move opposite" })
+
+  -- Optionally, make builtin f, F, t, T also repeatable
   vim.keymap.set({ "n", "x", "o" }, "f", ts_repeat_move.builtin_f)
   vim.keymap.set({ "n", "x", "o" }, "F", ts_repeat_move.builtin_F)
   vim.keymap.set({ "n", "x", "o" }, "t", ts_repeat_move.builtin_t)

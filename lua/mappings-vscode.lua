@@ -25,6 +25,7 @@ map("n", "<leader>fw", function()
   -- vscode.action("workbench.action.quickOpen", { prefix = "%" })
 end, opts)
 map("n", "<leader>fr", '<cmd>call VSCodeNotify("workbench.action.openRecent")<CR>', opts)
+map("n", "<leader>fb", '<cmd>call VSCodeNotify("fuzzySearch.activeTextEditor")<CR>', opts)
 map("n", "<leader>w", '<cmd>call VSCodeNotify("workbench.action.files.save")<CR>', opts)
 -- search in current file
 map("n", "<leader>f/", '<cmd>call VSCodeNotify("editor.actions.findWithArgs")<CR>', opts)
@@ -69,7 +70,7 @@ git_mapping()
 -- ============================
 -- 侧边栏和面板 Sidebar & Panels
 -- ============================
-map("n", "<leader>e", '<cmd>call VSCodeNotify("workbench.action.toggleSidebarVisibility")<CR>', opts)
+map("n", "<leader>e", '<cmd>call VSCodeNotify("workbench.files.action.showActiveFileInExplorer")<CR>', opts)
 map("n", "<leader>t", '<cmd>call VSCodeNotify("workbench.action.terminal.toggleTerminal")<CR>', opts)
 map("n", "<leader>o", '<cmd>call VSCodeNotify("outline.focus")<CR>', opts)
 
@@ -78,7 +79,9 @@ map("n", "<leader>o", '<cmd>call VSCodeNotify("outline.focus")<CR>', opts)
 -- ============================
 map("n", "<leader>/", '<cmd>call VSCodeNotify("editor.action.commentLine")<CR>', opts)
 map("v", "<leader>/", '<cmd>call VSCodeNotify("editor.action.commentLine")<CR>', opts)
-map("n", "za", '<cmd>call VSCodeNotify("editor.toggleFold")<CR>', opts)
+-- Map to VSCode fold commands (overwrite default Neovim mappings)
+map("n", "zc", '<cmd>call VSCodeNotify("editor.fold")<CR>', { silent = true, noremap = true })
+map("n", "za", '<cmd>call VSCodeNotify("editor.unfold")<CR>', { silent = true, noremap = true })
 map("n", "zA", '<cmd>call VSCodeNotify("editor.unfoldAll")<CR>', opts)
 map("n", "zM", '<cmd>call VSCodeNotify("editor.foldAll")<CR>', opts)
 map("n", "zR", '<cmd>call VSCodeNotify("editor.unfoldAll")<CR>', opts)

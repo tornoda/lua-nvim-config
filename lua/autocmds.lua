@@ -1,6 +1,9 @@
 local autocmd = vim.api.nvim_create_autocmd
 local utils = require "utils"
 
+-- Auto handle empty buffers on startup - removed to avoid modified buffer issue
+-- The NvDash command was causing the buffer to be marked as modified
+
 -- respect: https://github.com/github-naresh/auto-fold-imports.nvim/blob/main/lua/auto-fold-imports/init.lua
 autocmd({ "BufRead", "BufNewFile" }, {
   callback = function()
@@ -120,72 +123,24 @@ vim.api.nvim_create_autocmd("WinEnter", {
 -- })
 
 -- 自动格式化配置
--- 保存时自动修复ESLint问题
+-- 保存时自动修复ESLint问题 (已禁用)
 -- vim.api.nvim_create_autocmd("BufWritePre", {
 --   pattern = { "*.js", "*.jsx", "*.ts", "*.tsx", "*.vue", "*.svelte", "*.astro" },
 --   callback = function()
---     local bufnr = vim.api.nvim_get_current_buf()
---     local clients = vim.lsp.get_clients({ bufnr = bufnr })
---     if #clients > 0 then
---       vim.lsp.buf.format({ async = false })
---     end
+--     -- local bufnr = vim.api.nvim_get_current_buf()
+--     -- local clients = vim.lsp.get_clients({ bufnr = bufnr })
+--     -- if #clients > 0 then
+--     --   vim.lsp.buf.format({ async = false })
+--     -- end
+--     vim.api.nvim_command("PrettierFormat")
 --   end,
 -- })
 
 -- 添加代码修复命令
 vim.api.nvim_create_user_command("FixAll", function()
-  local bufnr = vim.api.nvim_get_current_buf()
-    local clients = vim.lsp.get_clients({ bufnr = bufnr })
-
-  -- 首先尝试使用null-ls的代码修复
-  local null_ls_available = false
-  for _, client in ipairs(clients) do
-    if client.name == "null-ls" then
-      null_ls_available = true
-      break
-    end
-  end
-
-  if null_ls_available then
-    -- 使用null-ls的代码修复，尝试多种修复源
-    local fix_sources = {
-      "source.fixAll.eslint_d", -- 优先尝试 eslint_d
-      "source.fixAll.eslint",   -- 然后尝试标准 eslint
-      "source.fixAll"           -- 最后尝试通用修复
-    }
-    local fix_success = false
-    local used_source = ""
-
-    for _, source in ipairs(fix_sources) do
-      local success, result = pcall(vim.lsp.buf.code_action, {
-        context = { only = { source } },
-        apply = true
-      })
-
-      if success then
-        used_source = source
-        fix_success = true
-        break
-      end
-    end
-
-    if fix_success then
-      print("✅ 使用 " .. used_source .. " 修复成功")
-      -- 等待一下让修复完成
-      vim.defer_fn(function()
-        -- 然后格式化代码
-        vim.lsp.buf.format({ async = false })
-        print("✨ 已修复所有可修复的问题并格式化代码")
-      end, 100)
-    else
-      print("⚠️  所有代码修复方法都失败了，尝试直接格式化")
-      vim.lsp.buf.format({ async = false })
-    end
-  else
-    -- 如果没有null-ls，直接格式化
-    vim.lsp.buf.format({ async = false })
-    print("✨ 已格式化代码")
-  end
+  -- Format code directly
+  vim.lsp.buf.format({ async = false })
+  print("✨ 已格式化代码")
 end, {})
 
 -- 添加Prettier格式化命令
@@ -201,16 +156,16 @@ local ollama = require("ollama_completion")
 
 -- 补全当前选中的内容
 function OllamaCompleteVisual()
-    local start_pos = vim.fn.getpos("'<")
-    local end_pos = vim.fn.getpos("'>")
-    local lines = vim.fn.getline(start_pos[2], end_pos[2])
-    local prompt = table.concat(lines, "\n")
-    local completion = ollama.complete(prompt)
-    if completion then
-        vim.api.nvim_put({completion}, "l", true, true)
-    else
-        print("Ollama 补全失败")
-    end
+  local start_pos = vim.fn.getpos("'<")
+  local end_pos = vim.fn.getpos("'>")
+  local lines = vim.fn.getline(start_pos[2], end_pos[2])
+  local prompt = table.concat(lines, "\n")
+  local completion = ollama.complete(prompt)
+  if completion then
+    vim.api.nvim_put({ completion }, "l", true, true)
+  else
+    print("Ollama 补全失败")
+  end
 end
 
 -- 你可以映射到快捷键

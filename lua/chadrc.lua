@@ -3,13 +3,20 @@
 ---@type ChadrcConfig
 local M = {
   base46 = {
-    theme = "penumbra_dark",
+    theme = "aylin",
     hl_add = {},
-    hl_override = {},
+    hl_override = {
+      ["@markup.heading.1.markdown"] = { fg = "#7fdbca", bold = true },
+      ["@markup.heading.2.markdown"] = { fg = "#9fd4ff", bold = true },
+      ["@markup.heading.3.markdown"] = { fg = "#9fd54d", bold = true },
+      ["@markup.heading.4.markdown"] = { fg = "#ecc48d", bold = true },
+      ["@markup.heading.5.markdown"] = { fg = "#FD98B9", bold = true },
+      ["@markup.heading.6.markdown"] = { fg = "#acafb9", italic = true },
+    },
     integrations = {},
     changed_themes = {},
     transparency = false,
-    theme_toggle = { "penumbra_dark", "penumbra_dark" },
+    theme_toggle = { "aylin", "aylin" },
   },
   ui = {
     cmp = {
@@ -33,11 +40,7 @@ local M = {
 
     -- lazyload it when there are 1+ buffers
     tabufline = {
-      enabled = true,
-      lazyload = true,
-      order = { "treeOffset", "buffers", "tabs", "btns" },
-      modules = nil,
-      bufwidth = 21,
+      enabled = false,
     },
   },
   nvdash = {
@@ -93,7 +96,7 @@ local M = {
 
 return M
 -- M.ui = {
---   theme = "penumbra_dark",
+--   theme = "aylin",
 --
 --   telescope = { style = "borderless" }, -- borderless / bordered
 --
