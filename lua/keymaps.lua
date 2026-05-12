@@ -253,9 +253,6 @@ local Code = {
     end, { desc = "console.log" })
 
     create_keymap("n", "<leader>cc", indent_blankline.extra.jump_to_scope, { desc = "jump to context" })
-
-    create_keymap("n", "<leader>co", ":Code<CR>", { desc = "open in Cursor (dir)" })
-    create_keymap("n", "<leader>cf", ":Code %<CR>", { desc = "open in Cursor (file)" })
   end,
 }
 

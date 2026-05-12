@@ -29,6 +29,7 @@ local servers = {
   -- "css_variables",
   -- "stylelint_lsp",
   -- "eslint", -- ESLint LSP
+  "basedpyright", -- Python LSP
   "ts_ls", -- TypeScript LSP
   -- "vtsls"
 }

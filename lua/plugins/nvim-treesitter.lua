@@ -21,6 +21,11 @@ return {
         "luadoc",
         "markdown",
         "markdown_inline",
+        -- Required by codecompanion.nvim's prompt library to parse YAML
+        -- frontmatter in built-in markdown prompts (commit.md, fix.md, etc.).
+        -- Without it the plugin logs "[Prompt Library] Missing frontmatter,
+        -- name or interaction in ..." for every builtin on startup.
+        "yaml",
       },
       highlight = {
         enable = true,

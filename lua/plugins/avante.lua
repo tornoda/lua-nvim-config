@@ -1,3 +1,5 @@
+local provider_cycle = { "codex", "opencode" }
+
 return {
   "yetone/avante.nvim",
   event = "VeryLazy",
@@ -35,7 +37,7 @@ return {
     windows = {
       position = "right",
       wrap = true,
-      width = 30,
+      width = 35,
       sidebar_header = {
         align = "center",
         rounded = true,
@@ -102,12 +104,25 @@ return {
     {
       "<leader>ap",
       function()
-        local current = require("avante.llm").get_provider()
-        local next_provider = current == "codex" and "opencode" or "codex"
+        -- Read the live provider from avante.config (avante.llm has no
+        -- get_provider helper — that was the bug in the previous setup).
+        local current = require("avante.config").provider
+        local next_provider = provider_cycle[1]
+        for i, name in ipairs(provider_cycle) do
+          if name == current then
+            next_provider = provider_cycle[(i % #provider_cycle) + 1]
+            break
+          end
+        end
         require("avante.api").switch_provider(next_provider)
-        print("Switched to " .. next_provider)
+        vim.notify("Avante provider: " .. next_provider, vim.log.levels.INFO)
       end,
-      desc = "Avante switch provider",
+      desc = "Avante cycle provider",
     },
+    -- ACP model / mode pickers.
+    { "<leader>am", "<cmd>AvanteACPModels<cr>", desc = "Avante ACP model" },
+    { "<leader>aM", "<cmd>AvanteACPModes<cr>",  desc = "Avante ACP mode (plan/ask)" },
+    -- Start a fresh chat — equivalent to codecompanion's <leader>cc
+    { "<leader>an", "<cmd>AvanteChatNew<cr>",   desc = "Avante new chat" },
   },
 }
