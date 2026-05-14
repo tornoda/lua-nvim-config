@@ -39,7 +39,7 @@ return {
       wrap = true,
       width = 35,
       sidebar_header = {
-        align = "center",
+        align = "left",
         rounded = true,
       },
     },

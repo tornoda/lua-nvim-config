@@ -58,6 +58,28 @@ return {
             },
             defaults = {
               auth_method = "chatgpt",
+              -- In a chat buffer, use /acp_session_options to change Codex model
+              -- and Reasoning Effort for the current ACP session.
+              -- To set defaults, add session_config_options here, for example:
+              -- session_config_options = {
+              --   model = "gpt-5.4-mini",
+              --   thought_level = "medium", -- Reasoning Effort: low|medium|high|xhigh
+              -- },
+            },
+          })
+        end,
+        opencode = function()
+          return require("codecompanion.adapters").extend("opencode", {
+            commands = {
+              default = {
+                "opencode",
+                "acp",
+                "--cwd",
+                vim.fn.stdpath("config"),
+              },
+            },
+            env = {
+              OPENCODE_CONFIG_DIR = vim.fn.expand("~/.config/opencode"),
             },
           })
         end,
@@ -73,9 +95,11 @@ return {
             local model_name = adapter.model and adapter.model.formatted_name
                 or adapter.model and adapter.model.name
                 or adapter.formatted_name
-            return "CodeCompanion (" .. model_name .. ")"
+                or adapter.name
+                or "AI"
+            return "󰚩 CodeCompanion · " .. model_name
           end,
-          user = "Me",
+          user = " Yulong",
         },
       },
     },
@@ -86,11 +110,21 @@ return {
       },
       chat = {
         show_token_count = true,
+        icons = {
+          buffer_sync_all = "🔄 ",
+          buffer_sync_diff = "📝 ",
+          chat_context = "📎 ",
+          chat_fold = "🧠 ",
+          tool_pending = "⏳ ",
+          tool_in_progress = "⚙️ ",
+          tool_success = "✅ ",
+          tool_failure = "❌ ",
+        },
         window = {
-          layout = "vertical",
-          position = "right",
-          width = 0.35,
+          layout = "float",
+          width = 0.85,
           height = 0.8,
+          border = "rounded",
         },
       },
       diff = {
@@ -112,8 +146,18 @@ return {
   },
   config = function(_, opts)
     require("codecompanion").setup(opts)
+    require("codecompanion.config").display.chat.separator = nil
 
     local group = vim.api.nvim_create_augroup("CodeCompanionStaticTitles", { clear = true })
+    vim.api.nvim_create_autocmd({ "FileType", "BufWinEnter" }, {
+      pattern = "codecompanion",
+      group = group,
+      callback = function()
+        vim.opt_local.number = false
+        vim.opt_local.relativenumber = false
+      end,
+    })
+
     vim.api.nvim_create_autocmd("User", {
       pattern = "CodeCompanionChatSubmitted",
       group = group,
@@ -141,6 +185,7 @@ return {
   keys = {
     -- Core windows
     { "<leader>cc", "<cmd>CodeCompanionChat<cr>",              desc = "CC: New Chat",          mode = { "n", "v" } },
+    { "<leader>co", "<cmd>CodeCompanionChat opencode<cr>",     desc = "CC: OpenCode ACP Chat", mode = { "n", "v" } },
     { "<leader>ct", "<cmd>CodeCompanionChat Toggle<cr>",       desc = "CC: Toggle Chat",       mode = { "n", "v" } },
     { "<leader>ci", "<cmd>CodeCompanion<cr>",                  desc = "CC: Inline Prompt",     mode = { "n", "v" } },
     { "<leader>ca", "<cmd>CodeCompanionActions<cr>",           desc = "CC: Action Palette",    mode = { "n", "v" } },

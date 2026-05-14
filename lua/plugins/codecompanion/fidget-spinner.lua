@@ -17,11 +17,10 @@ function M:llm_role_title(adapter)
   if adapter and adapter.model then
     model = adapter.model.formatted_name or adapter.model.name or ""
   end
-  local name = (adapter and (adapter.formatted_name or adapter.name)) or "LLM"
   if model ~= "" then
-    return name .. " (" .. model .. ")"
+    return "󰚩 " .. model
   end
-  return name
+  return "󰚩 CodeCompanion"
 end
 
 function M:init()
@@ -35,8 +34,11 @@ function M:init()
       local id = data.id
       if not id then return end
 
+      local interaction = data.interaction or "request"
+      interaction = interaction:sub(1, 1):upper() .. interaction:sub(2)
+
       M.handles[id] = progress.handle.create({
-        title = " Requesting assistance (" .. (data.interaction or "unknown") .. ")",
+        title = "󰚩 CodeCompanion · " .. interaction,
         message = "In progress...",
         lsp_client = { name = M:llm_role_title(data.adapter) },
       })

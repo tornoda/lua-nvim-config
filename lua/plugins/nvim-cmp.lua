@@ -81,6 +81,21 @@ return {
       return get_bufnrs_by_filetype({ "opencode_output" })
     end
 
+    local function get_loaded_listed_bufnrs()
+      local bufnrs = {}
+
+      for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+        if vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].buflisted then
+          local buftype = vim.api.nvim_get_option_value("buftype", { buf = bufnr })
+          if buftype == "" then
+            table.insert(bufnrs, bufnr)
+          end
+        end
+      end
+
+      return bufnrs
+    end
+
     local function get_existing_dictionary_paths()
       local candidate_paths = {
         vim.fn.stdpath("data") .. "/lazy/cmp-dictionary/data/words",
@@ -101,15 +116,54 @@ return {
       buffer = "[OUTPUT]",
       dictionary = "[WORD]",
       nvim_lsp = "[LSP]",
+      nvim_tree = "[TREE]",
       path = "[PATH]",
       luasnip = "[SNIP]",
     }
 
-    local function format_opencode_completion(entry, vim_item)
+    local function format_chat_completion(entry, vim_item)
       vim_item.kind = ""
-      vim_item.menu = source_tags[entry.source.name] or ("[" .. entry.source.name .. "]")
+      if entry.source.name == "buffer" and vim.bo.filetype == "codecompanion" then
+        vim_item.menu = "[BUFFER]"
+      else
+        vim_item.menu = source_tags[entry.source.name] or ("[" .. entry.source.name .. "]")
+      end
       return vim_item
     end
+
+    cmp.register_source("nvim_tree", {
+      is_available = function()
+        return vim.fn.bufnr("NvimTree_*") ~= -1
+      end,
+      complete = function(_, _, callback)
+        local items = {}
+        local seen = {}
+
+        for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+          if vim.api.nvim_buf_is_loaded(bufnr)
+              and vim.api.nvim_get_option_value("filetype", { buf = bufnr }) == "NvimTree" then
+            local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+
+            for _, line in ipairs(lines) do
+              local label = line
+                  :gsub("^[%s│├└─]+", "")
+                  :gsub("^[▾▸]%s*", "")
+                  :gsub("%s+$", "")
+
+              if label ~= "" and not label:match("^%.%.$") and not seen[label] then
+                seen[label] = true
+                table.insert(items, {
+                  label = label,
+                  kind = vim.lsp.protocol.CompletionItemKind.File,
+                })
+              end
+            end
+          end
+        end
+
+        callback(items)
+      end,
+    })
 
     local ok_dictionary, cmp_dictionary = pcall(require, "cmp_dictionary")
     if ok_dictionary then
@@ -122,6 +176,15 @@ return {
 
     cmp.setup {
       completion = { completeopt = "menu,menuone" },
+      matching = {
+        disallow_fuzzy_matching = false,
+        disallow_fullfuzzy_matching = false,
+        disallow_partial_fuzzy_matching = false,
+        disallow_partial_matching = false,
+        disallow_prefix_unmatching = false,
+        disallow_symbol_nonprefix_matching = false,
+        ignore_case = true,
+      },
       snippet = {
         expand = function(args)
           require("luasnip").lsp_expand(args.body)
@@ -190,7 +253,34 @@ return {
         { name = "luasnip" },
       }),
       formatting = {
-        format = format_opencode_completion,
+        format = format_chat_completion,
+      },
+    })
+
+    cmp.setup.filetype({ "codecompanion" }, {
+      sources = cmp.config.sources({
+        { name = "nvim_lsp" },
+        { name = "path" },
+        {
+          name = "nvim_tree",
+          keyword_length = 1,
+        },
+        {
+          name = "dictionary",
+          keyword_length = 2,
+        },
+        {
+          name = "buffer",
+          keyword_length = 2,
+          option = {
+            get_bufnrs = get_loaded_listed_bufnrs,
+          },
+        },
+      }, {
+        { name = "luasnip" },
+      }),
+      formatting = {
+        format = format_chat_completion,
       },
     })
   end,

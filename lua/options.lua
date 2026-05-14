@@ -117,6 +117,35 @@ o.ttyfast = true
 -- 优化终端性能
 o.termguicolors = true
 
+-- Keep floating window borders visually consistent across core UI and plugins.
+local function apply_float_border_highlights()
+  local links = {
+    FloatBorder = "WinSeparator",
+    LspInfoBorder = "FloatBorder",
+    TelescopeBorder = "FloatBorder",
+    TelescopePromptBorder = "FloatBorder",
+    TelescopePreviewBorder = "FloatBorder",
+    TelescopeResultsBorder = "FloatBorder",
+    WhichKeyBorder = "FloatBorder",
+    CmpBorder = "FloatBorder",
+    NoiceCmdlinePopupBorder = "FloatBorder",
+    NoicePopupBorder = "FloatBorder",
+    NotifyBorder = "FloatBorder",
+    LazyNormal = "NormalFloat",
+  }
+
+  for group, target in pairs(links) do
+    vim.api.nvim_set_hl(0, group, { link = target })
+  end
+end
+
+apply_float_border_highlights()
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+  group = vim.api.nvim_create_augroup("UnifiedFloatBorderHighlights", { clear = true }),
+  callback = apply_float_border_highlights,
+})
+
 -- 减少不必要的功能
 o.compatible = false
 o.showmatch = false
