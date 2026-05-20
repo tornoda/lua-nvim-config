@@ -151,10 +151,10 @@ return {
           height = 10,
         },
       },
-      hooks = {
-        view_enter = func.setColor,
-        view_opened = func.setColor,
-      },
+      -- hooks = {
+      --   view_enter = func.setColor,
+      --   view_opened = func.setColor,
+      -- },
       keymaps = {
         view = {
           { "n", "<leader>b", false },
@@ -189,7 +189,7 @@ return {
     }
 
     set_autocmd()
-    func.setColor()
+    -- func.setColor()
   end,
   -- Export functions for keymaps.lua
   extra = {

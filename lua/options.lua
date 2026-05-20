@@ -12,9 +12,6 @@ opt.fileencodings = { "utf-8", "ucs-bom", "gb18030", "gbk", "gb2312", "cp936" }
 -- Set file format (unix, dos, mac)
 opt.fileformats = { "unix", "dos", "mac" }
 
--------------------------------------- globals -----------------------------------------
-g.toggle_theme_icon = "   "
-
 -------------------------------------- options ------------------------------------------
 o.laststatus = 3
 o.showmode = false
@@ -87,10 +84,10 @@ local delim = is_windows and ";" or ":"
 vim.env.PATH = table.concat({ vim.fn.stdpath "data", "mason", "bin" }, sep) .. delim .. vim.env.PATH
 
 -- diff mode colors
-vim.api.nvim_set_hl(0, "DiffAdd", { fg = "NONE", bg = "#005f00" })
-vim.api.nvim_set_hl(0, "DiffChange", { fg = "NONE", bg = "#005f5f" })
-vim.api.nvim_set_hl(0, "DiffDelete", { fg = "NONE", bg = "#5f0000" })
-vim.api.nvim_set_hl(0, "DiffText", { fg = "NONE", bg = "#870000" })
+-- vim.api.nvim_set_hl(0, "DiffAdd", { fg = "NONE", bg = "#005f00" })
+-- vim.api.nvim_set_hl(0, "DiffChange", { fg = "NONE", bg = "#005f5f" })
+-- vim.api.nvim_set_hl(0, "DiffDelete", { fg = "NONE", bg = "#5f0000" })
+-- vim.api.nvim_set_hl(0, "DiffText", { fg = "NONE", bg = "#870000" })
 
 -- 性能优化配置
 -- 减少交换文件写入频率

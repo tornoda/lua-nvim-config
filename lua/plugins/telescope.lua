@@ -1,4 +1,3 @@
--- dofile(vim.g.base46_cache .. "telescope")
 local telescope_builtin = require "telescope.builtin"
 local telescope = require "telescope"
 local utils = require "utils"
@@ -208,7 +207,7 @@ local config = {
   },
 }
 
-local extensions_list = { "themes", "terms", "fzf", "ui-select", "projects" }
+local extensions_list = { "fzf", "ui-select", "projects" }
 
 local options = {
   defaults = config,

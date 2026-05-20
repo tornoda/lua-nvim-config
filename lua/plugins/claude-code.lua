@@ -1,7 +1,20 @@
 return {
   "coder/claudecode.nvim",
   dependencies = { "folke/snacks.nvim" },
-  config = true,
+  opts = function()
+    local oauth_token = os.getenv("CLAUDE_CODE_OAUTH_TOKEN")
+    if oauth_token and oauth_token ~= "" then
+      return {
+        env = {
+          CLAUDE_CODE_OAUTH_TOKEN = oauth_token,
+          -- Avoid treating an OAuth token as ANTHROPIC_API_KEY.
+          ANTHROPIC_API_KEY = "",
+        },
+      }
+    end
+
+    return {}
+  end,
   keys = {
     { "<leader>a",  nil,                              desc = "AI/Claude Code" },
     { "<leader>ac", "<cmd>ClaudeCode<cr>",            desc = "Toggle Claude" },

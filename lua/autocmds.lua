@@ -170,3 +170,32 @@ end
 
 -- 你可以映射到快捷键
 vim.api.nvim_set_keymap("v", "<leader>o", ":lua OllamaCompleteVisual()<CR>", { noremap = true, silent = true })
+
+
+-- 命令：:FloatEdit <文件路径>
+vim.api.nvim_create_user_command('FloatEdit', function(opts)
+  function FloatEdit(filepath)
+    -- 创建临时空缓冲区
+    local buf = vim.api.nvim_create_buf(false, true)
+    -- 浮动窗口参数
+    local width = math.floor(vim.o.columns * 0.4)
+    local height = math.floor(vim.o.lines * 0.4)
+    local opts = {
+      relative = 'editor',
+      width = width,
+      height = height,
+      row = math.floor((vim.o.lines - height) / 2),
+      col = math.floor((vim.o.columns - width) / 2),
+      style = 'minimal',
+      border = 'rounded'
+    }
+    local win = vim.api.nvim_open_win(buf, true, opts)
+
+    -- 在浮动窗口上下文中打开文件
+    vim.api.nvim_win_call(win, function()
+      vim.cmd('edit ' .. vim.fn.fnameescape(filepath))
+    end)
+  end
+
+  FloatEdit(opts.args)
+end, { nargs = 1 })

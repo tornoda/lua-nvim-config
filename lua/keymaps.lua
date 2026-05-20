@@ -7,6 +7,14 @@ local _trouble = require "plugins._trouble"
 local indent_blankline = require "plugins.indent-blankline"
 local has_comment, comment_api = pcall(require, "Comment.api")
 
+local function open_terminal(direction)
+  require("toggleterm.terminal").Terminal:new({ direction = direction }):open()
+end
+
+local function toggle_terminal(id, direction)
+  require("toggleterm.terminal").Terminal:new({ id = id, direction = direction }):toggle()
+end
+
 -- Unified keymaps configuration
 -- This file consolidates all leader key mappings with which-key integration
 
@@ -121,23 +129,23 @@ local Toggle = {
 
     -- Terminal operations (moved from <leader>h to <leader>th)
     create_keymap("n", "<leader>th", function()
-      require("nvchad.term").new { pos = "sp" }
+      open_terminal "horizontal"
     end, { desc = "terminal horizontal" })
 
     create_keymap("n", "<leader>tv", function()
-      require("nvchad.term").new { pos = "vsp" }
+      open_terminal "vertical"
     end, { desc = "terminal vertical" })
 
     create_keymap({ "n", "t" }, "<A-v>", function()
-      require("nvchad.term").toggle { pos = "vsp", id = "vtoggleTerm" }
+      toggle_terminal(1, "vertical")
     end, { desc = "terminal toggleable vertical" })
 
     create_keymap({ "n", "t" }, "<A-h>", function()
-      require("nvchad.term").toggle { pos = "sp", id = "htoggleTerm" }
+      toggle_terminal(2, "horizontal")
     end, { desc = "terminal toggleable horizontal" })
 
     create_keymap({ "n", "t" }, "<A-i>", function()
-      require("nvchad.term").toggle { pos = "float", id = "floatTerm" }
+      toggle_terminal(3, "float")
     end, { desc = "terminal toggle floating" })
 
     create_keymap("n", "<leader>tn", "<cmd>set nu!<CR>", { desc = "toggle line numbers" })
@@ -321,7 +329,7 @@ local Project = {
   name = "Project/Picker",
   leader = "<leader>p",
   keymaps = function()
-    create_keymap("n", "<leader>pt", "<cmd>Telescope terms<CR>", { desc = "pick terminal" })
+    create_keymap("n", "<leader>pt", "<cmd>ToggleTermToggleAll<CR>", { desc = "toggle all terminals" })
   end,
 }
 

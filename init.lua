@@ -4,8 +4,6 @@ if vim.g.vscode then
 else
   require "neovide"
 
-  vim.g.base46_cache = vim.fn.stdpath "data" .. "/base46/"
-
   -- bootstrap lazy and all plugins
   local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
 
@@ -20,37 +18,9 @@ else
 
   -- load plugins
   require("lazy").setup({
-    {
-      "NvChad/NvChad",
-      lazy = false,
-      branch = "v2.5",
-      import = "nvchad.plugins",
-    },
-
     -- loading lua/plugins
     { import = "plugins" },
   }, lazy_config)
-
-  -- (method 2, for non lazyloaders) to load all highlights at once
-  -- for _, v in ipairs(vim.fn.readdir(vim.g.base46_cache)) do
-  --   dofile(vim.g.base46_cache .. v)
-  -- end
-
-  -- -- load theme
-  -- dofile(vim.g.base46_cache .. "syntax")
-  -- dofile(vim.g.base46_cache .. "defaults")
-  -- -- print("vim.g.base46_cache" .. vim.g.base46_cache)
-  -- dofile(vim.g.base46_cache .. "statusline")
-    --
-    -- Base46 highlights are already precompiled via the plugin build step; skip scanning the whole cache directory
-    local base46_theme = vim.g.base46_cache .. "defaults"
-    if vim.fn.filereadable(base46_theme) == 1 then
-      dofile(base46_theme)
-      pcall(dofile, vim.g.base46_cache .. "statusline")
-      pcall(dofile, vim.g.base46_cache .. "highlights")
-    end
-
-  -- require "nvchad.autocmds"
 
   -- Load core options synchronously to avoid marking initial buffer as modified
   require "options"

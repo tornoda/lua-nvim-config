@@ -1,3 +1,97 @@
+local function has_exec(cmd)
+  return vim.fn.executable(cmd) == 1
+end
+
+-- Return the real value of an env var, or nil if unset/empty.
+-- (Note: codecompanion HTTP adapters accept a name reference like "ANTHROPIC_API_KEY"
+--  and resolve it themselves, but ACP adapters pass `env` straight to the child
+--  process, so we MUST supply the real value here, not the variable name.)
+local function env_value(name)
+  local value = vim.env[name]
+  if value and value ~= "" then
+    return value
+  end
+end
+
+-- Read the Claude Code OAuth token from the macOS Keychain. The `claude` CLI
+-- stores it there after `claude setup-token`. Returns nil on any failure.
+local function read_claude_token_from_keychain()
+  if vim.fn.has("mac") ~= 1 or vim.fn.executable("security") ~= 1 then
+    return nil
+  end
+  local raw = vim.fn.system({
+    "security", "find-generic-password",
+    "-s", "Claude Code-credentials", "-w",
+  })
+  if vim.v.shell_error ~= 0 or not raw or raw == "" then
+    return nil
+  end
+  local ok, decoded = pcall(vim.json.decode, raw)
+  if not ok or type(decoded) ~= "table" then
+    return nil
+  end
+  local oauth = decoded.claudeAiOauth
+  if type(oauth) == "table" and type(oauth.accessToken) == "string" and oauth.accessToken ~= "" then
+    return oauth.accessToken
+  end
+  return nil
+end
+
+
+local function build_acp_adapters()
+  local adapters = {
+    opts = {
+      show_presets = false,
+    },
+  }
+
+  adapters.codex = function()
+    return require("codecompanion.adapters").extend("codex", {
+      commands = {
+        default = { "npx", "-y", "@zed-industries/codex-acp" },
+      },
+      env = {
+        NPM_CONFIG_USERCONFIG = "/dev/null",
+      },
+      defaults = {
+        auth_method = "chatgpt",
+      },
+    })
+  end
+
+  adapters.claude_code = function()
+    -- ACP env is forwarded verbatim to the spawned child process — must be a real
+    -- token string, not a variable name. Prefer env var, fall back to Keychain.
+    local oauth = env_value("CLAUDE_CODE_OAUTH_TOKEN") or read_claude_token_from_keychain()
+    return require("codecompanion.adapters").extend("claude_code", {
+      commands = {
+        default = { "claude-agent-acp" },
+      },
+      env = oauth and { CLAUDE_CODE_OAUTH_TOKEN = oauth } or {},
+    })
+  end
+
+  if has_exec("opencode") then
+    adapters.opencode = function()
+      return require("codecompanion.adapters").extend("opencode", {
+        commands = {
+          default = {
+            "opencode",
+            "acp",
+            "--cwd",
+            vim.fn.stdpath("config"),
+          },
+        },
+        env = {
+          OPENCODE_CONFIG_DIR = vim.fn.expand("~/.config/opencode"),
+        },
+      })
+    end
+  end
+
+  return adapters
+end
+
 return {
   "olimorris/codecompanion.nvim",
   version = "^19.0.0",
@@ -41,54 +135,20 @@ return {
         },
       },
     },
-    -- ACP adapters
+    -- ACP adapters only — we authenticate via ChatGPT / Claude Code OAuth
+    -- (no OpenAI API key), so HTTP adapters are not used.
     adapters = {
-      acp = {
-        codex = function()
-          return require("codecompanion.adapters").extend("codex", {
-            commands = {
-              default = {
-                "npx",
-                "-y",
-                "@zed-industries/codex-acp",
-              },
-            },
-            env = {
-              NPM_CONFIG_USERCONFIG = "/dev/null",
-            },
-            defaults = {
-              auth_method = "chatgpt",
-              -- In a chat buffer, use /acp_session_options to change Codex model
-              -- and Reasoning Effort for the current ACP session.
-              -- To set defaults, add session_config_options here, for example:
-              -- session_config_options = {
-              --   model = "gpt-5.4-mini",
-              --   thought_level = "medium", -- Reasoning Effort: low|medium|high|xhigh
-              -- },
-            },
-          })
-        end,
-        opencode = function()
-          return require("codecompanion.adapters").extend("opencode", {
-            commands = {
-              default = {
-                "opencode",
-                "acp",
-                "--cwd",
-                vim.fn.stdpath("config"),
-              },
-            },
-            env = {
-              OPENCODE_CONFIG_DIR = vim.fn.expand("~/.config/opencode"),
-            },
-          })
-        end,
+      acp = build_acp_adapters(),
+      http = {
+        opts = {
+          show_presets = false,
+        },
       },
     },
     -- Interactions configuration
     interactions = {
       chat = {
-        adapter = "codex",
+        adapter = "claude_code",
         roles = {
           ---Display model name in the chat header instead of adapter name
           llm = function(adapter)
@@ -132,21 +192,21 @@ return {
         close_chat_at = 240,
       },
     },
-    -- General options
-    opts = {
-      log_level = "ERROR",
-      send_code = true,
-      use_default_actions = true,
-      use_default_prompts = true,
-      context_management = {
-        enabled = true,
-        trigger = 0.75, -- Percent of the context window (e.g., 0.75 for 75%)
-      },
-    },
   },
   config = function(_, opts)
     require("codecompanion").setup(opts)
-    require("codecompanion.config").display.chat.separator = nil
+
+    -- Neovim 0.11 follows __index chains when serializing nvim_exec_autocmds data.
+    -- The adapter_modified object carries a metatable with Adapter.__index = Adapter
+    -- (circular), causing "Lua failed to grow stack". Strip it from the event data.
+    local cc_utils = require("codecompanion.utils")
+    local _fire = cc_utils.fire
+    cc_utils.fire = function(event, data)
+      if data and data.adapter_modified then
+        data = { agent_capabilities = data.agent_capabilities }
+      end
+      return _fire(event, data)
+    end
 
     local group = vim.api.nvim_create_augroup("CodeCompanionStaticTitles", { clear = true })
     vim.api.nvim_create_autocmd({ "FileType", "BufWinEnter" }, {
@@ -184,8 +244,10 @@ return {
   end,
   keys = {
     -- Core windows
-    { "<leader>cc", "<cmd>CodeCompanionChat<cr>",              desc = "CC: New Chat",          mode = { "n", "v" } },
-    { "<leader>co", "<cmd>CodeCompanionChat opencode<cr>",     desc = "CC: OpenCode ACP Chat", mode = { "n", "v" } },
+    { "<leader>cc", "<cmd>CodeCompanionChat<cr>",              desc = "CC: New Chat (default)", mode = { "n", "v" } },
+    { "<leader>cC", "<cmd>CodeCompanionChat claude_code<cr>",  desc = "CC: Claude ACP Chat",    mode = { "n", "v" } },
+    { "<leader>cX", "<cmd>CodeCompanionChat codex<cr>",        desc = "CC: Codex ACP Chat",     mode = { "n", "v" } },
+    { "<leader>co", "<cmd>CodeCompanionChat opencode<cr>",     desc = "CC: OpenCode ACP Chat",  mode = { "n", "v" } },
     { "<leader>ct", "<cmd>CodeCompanionChat Toggle<cr>",       desc = "CC: Toggle Chat",       mode = { "n", "v" } },
     { "<leader>ci", "<cmd>CodeCompanion<cr>",                  desc = "CC: Inline Prompt",     mode = { "n", "v" } },
     { "<leader>ca", "<cmd>CodeCompanionActions<cr>",           desc = "CC: Action Palette",    mode = { "n", "v" } },
