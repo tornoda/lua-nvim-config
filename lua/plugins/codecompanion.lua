@@ -1,7 +1,3 @@
-local function has_exec(cmd)
-  return vim.fn.executable(cmd) == 1
-end
-
 -- Return the real value of an env var, or nil if unset/empty.
 -- (Note: codecompanion HTTP adapters accept a name reference like "ANTHROPIC_API_KEY"
 --  and resolve it themselves, but ACP adapters pass `env` straight to the child
@@ -69,24 +65,6 @@ local function build_acp_adapters()
       },
       env = oauth and { CLAUDE_CODE_OAUTH_TOKEN = oauth } or {},
     })
-  end
-
-  if has_exec("opencode") then
-    adapters.opencode = function()
-      return require("codecompanion.adapters").extend("opencode", {
-        commands = {
-          default = {
-            "opencode",
-            "acp",
-            "--cwd",
-            vim.fn.stdpath("config"),
-          },
-        },
-        env = {
-          OPENCODE_CONFIG_DIR = vim.fn.expand("~/.config/opencode"),
-        },
-      })
-    end
   end
 
   return adapters
@@ -247,7 +225,6 @@ return {
     { "<leader>cc", "<cmd>CodeCompanionChat<cr>",              desc = "CC: New Chat (default)", mode = { "n", "v" } },
     { "<leader>cC", "<cmd>CodeCompanionChat claude_code<cr>",  desc = "CC: Claude ACP Chat",    mode = { "n", "v" } },
     { "<leader>cX", "<cmd>CodeCompanionChat codex<cr>",        desc = "CC: Codex ACP Chat",     mode = { "n", "v" } },
-    { "<leader>co", "<cmd>CodeCompanionChat opencode<cr>",     desc = "CC: OpenCode ACP Chat",  mode = { "n", "v" } },
     { "<leader>ct", "<cmd>CodeCompanionChat Toggle<cr>",       desc = "CC: Toggle Chat",       mode = { "n", "v" } },
     { "<leader>ci", "<cmd>CodeCompanion<cr>",                  desc = "CC: Inline Prompt",     mode = { "n", "v" } },
     { "<leader>ca", "<cmd>CodeCompanionActions<cr>",           desc = "CC: Action Palette",    mode = { "n", "v" } },
