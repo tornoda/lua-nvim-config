@@ -400,7 +400,16 @@ M.select_buffers_and_tabs = function()
     },
     sorter = conf.generic_sorter {},
     previewer = create_picker_previewer(),
-    attach_mappings = function(prompt_bufnr)
+    attach_mappings = function(prompt_bufnr, map)
+      local function open_selection_in_float()
+        local selection = action_state.get_selected_entry()
+        actions.close(prompt_bufnr)
+
+        if selection and selection.kind == "buffer" then
+          require("utils").open_buffer_in_float(selection.value)
+        end
+      end
+
       actions.select_default:replace(function()
         local selection = action_state.get_selected_entry()
         actions.close(prompt_bufnr)
@@ -424,6 +433,11 @@ M.select_buffers_and_tabs = function()
           vim.cmd("buffer " .. selection.value)
         end
       end)
+
+      map("i", "<C-CR>", open_selection_in_float)
+      map("i", "<C-Enter>", open_selection_in_float)
+      map("n", "<C-CR>", open_selection_in_float)
+      map("n", "<C-Enter>", open_selection_in_float)
 
       return true
     end,

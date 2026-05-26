@@ -113,4 +113,37 @@ M.get_selection_coordinates = function()
   return string.format("%s:%d:%d", rel_path, start_line, end_line)
 end
 
+local floating_buffer_win = nil
+
+M.open_buffer_in_float = function(bufnr)
+  if not vim.api.nvim_buf_is_valid(bufnr) then
+    vim.notify("Buffer is no longer valid", vim.log.levels.WARN)
+    return
+  end
+
+  local width = math.floor(vim.o.columns * 0.8)
+  local height = math.floor(vim.o.lines * 0.8)
+  local row = math.floor((vim.o.lines - height) / 2)
+  local col = math.floor((vim.o.columns - width) / 2)
+
+  local win_config = {
+    relative = "editor",
+    width = width,
+    height = height,
+    row = row,
+    col = col,
+    style = "minimal",
+    border = "rounded",
+  }
+
+  if floating_buffer_win and vim.api.nvim_win_is_valid(floating_buffer_win) then
+    vim.api.nvim_win_set_config(floating_buffer_win, win_config)
+    vim.api.nvim_win_set_buf(floating_buffer_win, bufnr)
+    vim.api.nvim_set_current_win(floating_buffer_win)
+    return
+  end
+
+  floating_buffer_win = vim.api.nvim_open_win(bufnr, true, win_config)
+end
+
 return M
