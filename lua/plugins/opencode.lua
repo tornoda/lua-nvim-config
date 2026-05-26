@@ -6,6 +6,25 @@ return {
       preferred_completion = "nvim-cmp",
     })
 
+    local tool_formatters = require "opencode.ui.formatter.tools"
+    tool_formatters.skill = {
+      format = function(output, part)
+        local icons = require "opencode.ui.icons"
+        local utils = require "opencode.ui.formatter.utils"
+        local input = part.state and part.state.input or {}
+        local skill_name = type(input.name) == "string" and input.name or ""
+
+        utils.format_action(output, icons.get "tool", "skill", skill_name, utils.get_duration_text(part))
+      end,
+      summary = function(_, input)
+        local icons = require "opencode.ui.icons"
+        input = input or {}
+        local skill_name = type(input.name) == "string" and input.name or ""
+
+        return icons.get "tool", "skill", skill_name
+      end,
+    }
+
     vim.keymap.set({ "n", "t" }, "<leader>og", "<cmd>Opencode toggle<cr>", { desc = "Toggle Opencode" })
   end,
   dependencies = {

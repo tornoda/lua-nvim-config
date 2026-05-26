@@ -113,6 +113,22 @@ return {
         },
       },
     },
+    -- Rules: inject instruction files as context into every chat
+    rules = {
+      default = {
+        description = "Global coding instructions",
+        files = {
+          { path = "~/.config/opencode/instructions", files = "*.md" },
+        },
+        is_preset = true,
+      },
+      opts = {
+        chat = {
+          autoload = "default",
+          enabled = true,
+        },
+      },
+    },
     -- ACP adapters only — we authenticate via ChatGPT / Claude Code OAuth
     -- (no OpenAI API key), so HTTP adapters are not used.
     adapters = {
@@ -159,9 +175,9 @@ return {
           tool_failure = "❌ ",
         },
         window = {
-          layout = "float",
-          width = 0.85,
-          height = 0.8,
+          layout = "horizontal",
+          position = "bottom",
+          height = 0.5,
           border = "rounded",
         },
       },
