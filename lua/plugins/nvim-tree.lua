@@ -16,22 +16,9 @@ map("n", "<leader>e", focus_tree, { desc = "nvimtree focus window" })
 
 local function set_mappings(bufnr)
   local api = require "nvim-tree.api"
-  local utils = require "utils"
 
   local function opts(desc)
     return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
-  end
-
-  local function open_node_in_float()
-    local node = api.tree.get_node_under_cursor()
-    if not node or node.type == "directory" then
-      api.node.open.edit()
-      return
-    end
-
-    local file_bufnr = vim.fn.bufadd(node.absolute_path)
-    vim.fn.bufload(file_bufnr)
-    utils.open_buffer_in_float(file_bufnr)
   end
 
   vim.keymap.set("n", "<C-]>", api.tree.change_root_to_node, opts "CD")
@@ -74,7 +61,6 @@ local function set_mappings(bufnr)
   vim.keymap.set("n", "K", api.node.navigate.sibling.first, opts "First Sibling")
   vim.keymap.set("n", "<leader>l", api.node.open.toggle_group_empty, opts "Toggle Group Empty")
   vim.keymap.set("n", "<leader>m", api.tree.toggle_no_bookmark_filter, opts "Toggle Filter: No Bookmark")
-  vim.keymap.set("n", "<C-CR>", open_node_in_float, opts "Open: Float")
   vim.keymap.set("n", "m", api.marks.toggle, opts "Toggle Bookmark")
   vim.keymap.set("n", "o", api.node.open.edit, opts "Open")
   vim.keymap.set("n", "O", api.node.open.no_window_picker, opts "Open: No Window Picker")

@@ -122,8 +122,9 @@ M.open_buffer_in_float = function(bufnr)
   end
 
   local width = math.floor(vim.o.columns * 0.8)
-  local height = math.floor(vim.o.lines * 0.8)
-  local row = math.floor((vim.o.lines - height) / 2)
+  local statusline_rows = (vim.o.laststatus >= 2) and 1 or 0
+  local height = vim.o.lines - vim.o.cmdheight - statusline_rows - 2
+  local row = 0
   local col = math.floor((vim.o.columns - width) / 2)
 
   local win_config = {

@@ -114,9 +114,10 @@ o.ttyfast = true
 -- 优化终端性能
 o.termguicolors = true
 
--- Keep floating window borders visually consistent across core UI and plugins.
+-- Keep floating windows visually consistent across core UI and plugins.
 local function apply_float_border_highlights()
   local links = {
+    NormalFloat = "Normal",
     FloatBorder = "WinSeparator",
     LspInfoBorder = "FloatBorder",
     TelescopeBorder = "FloatBorder",

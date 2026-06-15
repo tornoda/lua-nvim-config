@@ -84,6 +84,9 @@ local Git = {
     create_keymap("n", "<leader>gb", "<cmd>Telescope git_branches<CR>", { desc = "git branches" })
     create_keymap("n", "<leader>gn", gitsigns.extra.next_hunk, { desc = "next git hunk" })
     create_keymap("n", "<leader>gp", gitsigns.extra.prev_hunk, { desc = "prev git hunk" })
+    create_keymap("n", "<leader>gf", function()
+      require("utils").open_buffer_in_float(vim.api.nvim_get_current_buf())
+    end, { desc = "open buffer in float" })
   end,
 }
 
@@ -542,6 +545,10 @@ M.global = function()
       end
     end
   end, { noremap = true, silent = true, desc = "next item in trouble" })
+
+  vim.api.nvim_create_user_command("FloatBuffer", function()
+    require("utils").open_buffer_in_float(vim.api.nvim_get_current_buf())
+  end, { desc = "Open current buffer in floating window" })
 
   create_keymap("n", "<S-Tab>", function()
     for _, win in ipairs(vim.api.nvim_list_wins()) do

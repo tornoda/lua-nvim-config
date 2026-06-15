@@ -165,6 +165,31 @@ return {
       end,
     })
 
+    cmp.register_source("opencode_subagents", {
+      is_available = function()
+        return vim.tbl_contains({ "opencode", "opencode_output" }, vim.bo.filetype)
+      end,
+      complete = function(_, _, callback)
+        callback({
+          { label = "gpt55-high" },
+          { label = "gpt55-low" },
+          { label = "gpt55" },
+          { label = "gpt55-fast-high" },
+          { label = "gpt55-fast-low" },
+          { label = "gpt55-fast" },
+          { label = "gpt54-high" },
+          { label = "gpt54-low" },
+          { label = "gpt54" },
+          { label = "gpt54-mini-high" },
+          { label = "gpt54-mini-low" },
+          { label = "gpt54-mini" },
+          { label = "gpt52-high" },
+          { label = "gpt52-low" },
+          { label = "gpt52" },
+        })
+      end,
+    })
+
     local ok_dictionary, cmp_dictionary = pcall(require, "cmp_dictionary")
     if ok_dictionary then
       cmp_dictionary.setup({
@@ -238,6 +263,10 @@ return {
       sources = cmp.config.sources({
         { name = "nvim_lsp" },
         { name = "path" },
+        {
+          name = "opencode_subagents",
+          keyword_length = 1,
+        },
         {
           name = "dictionary",
           keyword_length = 2,

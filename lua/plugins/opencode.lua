@@ -4,6 +4,13 @@ return {
   config = function()
     require("opencode").setup({
       preferred_completion = "nvim-cmp",
+      ui = {
+        position = "float",
+        float = {
+          width = 0.85,
+          height = 0.9,
+        },
+      },
     })
 
     local tool_formatters = require "opencode.ui.formatter.tools"
