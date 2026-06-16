@@ -143,7 +143,7 @@ return {
     local actions = require "diffview.actions"
 
     require("diffview").setup {
-      enhanced_diff_hl = false,
+      enhanced_diff_hl = true,
       file_panel = {
         listing_style = "list",
         win_config = { -- See ':h diffview-config-win_config'

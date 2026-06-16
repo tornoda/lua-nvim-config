@@ -1,6 +1,9 @@
 return {
   "sudo-tee/opencode.nvim",
-  lazy = false,
+  cmd = "Opencode",
+  keys = {
+    { "<leader>og", "<cmd>Opencode toggle<cr>", mode = { "n", "t" }, desc = "Toggle Opencode" },
+  },
   config = function()
     require("opencode").setup({
       preferred_completion = "nvim-cmp",
@@ -31,8 +34,6 @@ return {
         return icons.get "tool", "skill", skill_name
       end,
     }
-
-    vim.keymap.set({ "n", "t" }, "<leader>og", "<cmd>Opencode toggle<cr>", { desc = "Toggle Opencode" })
   end,
   dependencies = {
     "nvim-lua/plenary.nvim",

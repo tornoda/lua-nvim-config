@@ -235,6 +235,11 @@ local LSP = {
 
     create_keymap("n", "<leader>li", vim.lsp.buf.implementation, { desc = "implementation" })
     create_keymap("n", "<leader>ld", vim.lsp.buf.definition, { desc = "definition" })
+
+    -- Direct jump keymaps (match VSCode muscle memory)
+    create_keymap("n", "gd", vim.lsp.buf.definition, { desc = "goto definition" })
+    create_keymap("n", "gr", vim.lsp.buf.references, { desc = "goto references" })
+    create_keymap("n", "gi", vim.lsp.buf.implementation, { desc = "goto implementation" })
     create_keymap("n", "<leader>lt", vim.lsp.buf.type_definition, { desc = "type definition" })
     create_keymap("n", "<leader>lD", vim.lsp.buf.declaration, { desc = "declaration" })
     create_keymap("n", "<leader>le", vim.diagnostic.open_float, { desc = "show diagnostics" })

@@ -152,26 +152,6 @@ end, {})
 
 
 
-local ollama = require("ollama_completion")
-
--- 补全当前选中的内容
-function OllamaCompleteVisual()
-  local start_pos = vim.fn.getpos("'<")
-  local end_pos = vim.fn.getpos("'>")
-  local lines = vim.fn.getline(start_pos[2], end_pos[2])
-  local prompt = table.concat(lines, "\n")
-  local completion = ollama.complete(prompt)
-  if completion then
-    vim.api.nvim_put({ completion }, "l", true, true)
-  else
-    print("Ollama 补全失败")
-  end
-end
-
--- 你可以映射到快捷键
-vim.api.nvim_set_keymap("v", "<leader>o", ":lua OllamaCompleteVisual()<CR>", { noremap = true, silent = true })
-
-
 -- 命令：:FloatEdit <文件路径>
 vim.api.nvim_create_user_command('FloatEdit', function(opts)
   function FloatEdit(filepath)

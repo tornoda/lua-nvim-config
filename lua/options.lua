@@ -98,7 +98,6 @@ o.writebackup = false
 -- 优化搜索性能
 o.hlsearch = true
 o.incsearch = true
-o.lazyredraw = true
 
 -- 优化文件类型检测
 o.filetype = "on"
@@ -106,10 +105,6 @@ o.syntax = "on"
 
 -- 优化缓冲区性能
 o.hidden = true
-
--- 优化窗口性能
-o.lazyredraw = true
-o.ttyfast = true
 
 -- 优化终端性能
 o.termguicolors = true
@@ -145,10 +140,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 })
 
 -- 减少不必要的功能
-o.compatible = false
 o.showmatch = false
-o.showmode = false
-o.ruler = false
 o.modeline = false
 o.modelines = 0
 
@@ -167,9 +159,5 @@ o.autowriteall = false
 o.tagfunc = "v:lua.vim.lsp.tagfunc"
 -- 启用LSP格式化
 o.formatexpr = "v:lua.vim.lsp.formatexpr()"
--- 启用LSP缩进
-o.indentexpr = "v:lua.vim.lsp.indentexpr()"
-
--- 优化诊断显示
-o.updatetime = 500   -- 减少诊断更新频率
-o.signcolumn = "yes" -- 显示诊断标记列
+-- Note: indentexpr is left to treesitter/filetype indent. Forcing it to the
+-- LSP indent globally breaks o/O/= for servers with weak indent support.
