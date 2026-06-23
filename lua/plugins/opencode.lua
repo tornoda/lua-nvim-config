@@ -11,7 +11,7 @@ return {
         position = "float",
         float = {
           width = 0.85,
-          height = 0.9,
+          height = 0.85,
         },
       },
     })
