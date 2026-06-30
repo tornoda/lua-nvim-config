@@ -8,11 +8,7 @@ return {
     require("opencode").setup({
       preferred_completion = "nvim-cmp",
       ui = {
-        position = "float",
-        float = {
-          width = 0.85,
-          height = 0.85,
-        },
+        position = "current",
       },
     })
 

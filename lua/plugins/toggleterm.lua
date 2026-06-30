@@ -1,7 +1,7 @@
 return {
   "akinsho/toggleterm.nvim",
   version = "*",
-  lazy = false,
+  cmd = { "ToggleTerm", "ToggleTermToggleAll", "TermExec", "TermSelect" },
   opts = {
     size = function(term)
       if term.direction == "vertical" then

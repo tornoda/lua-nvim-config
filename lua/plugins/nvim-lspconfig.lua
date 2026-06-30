@@ -31,6 +31,7 @@ local servers = {
   -- "eslint", -- ESLint LSP
   "basedpyright", -- Python LSP
   "ts_ls", -- TypeScript LSP
+  "marksman", -- Markdown LSP
   -- "vtsls"
 }
 

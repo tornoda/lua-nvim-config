@@ -181,7 +181,7 @@ local Toggle = {
       local term_chan = nil
       local term_buf = nil
       for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-        if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_get_option(buf, "buftype") == "terminal" then
+        if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buftype == "terminal" then
           term_chan = vim.api.nvim_buf_get_var(buf, "terminal_job_id")
           if term_chan then
             term_buf = buf
@@ -353,9 +353,13 @@ local Quick = {
     create_keymap({ "n", "v" }, "<leader>q", "<cmd>q<CR>", { desc = "quit" })
     -- File explorer moved to Window module
 
-    -- Translation
-    create_keymap("n", "<leader>tr", "viw<Cmd>Translate ZH<CR>", { desc = "translate word" })
-    create_keymap("v", "<leader>tr", ":<C-u>Translate ZH<CR>", { desc = "translate selection" })
+    -- Translation (LLM via local Quotio, Claude Haiku)
+    create_keymap("n", "<leader>tr", function()
+      require("translate_llm").translate()
+    end, { desc = "translate line (LLM)" })
+    create_keymap("v", "<leader>tr", function()
+      require("translate_llm").translate()
+    end, { desc = "translate selection (LLM)" })
 
     -- Tab switching
     create_keymap("n", "<leader>1", "1gt", { desc = "tab 1" })
@@ -415,7 +419,6 @@ local modules = {
   Marks,
   Project,
   Quick,
-  WhichKey,
 }
 
 -- ============================================================================
@@ -541,7 +544,7 @@ M.global = function()
   create_keymap("n", "<Tab>", function()
     for _, win in ipairs(vim.api.nvim_list_wins()) do
       local buf = vim.api.nvim_win_get_buf(win)
-      local ft = vim.api.nvim_buf_get_option(buf, "filetype")
+      local ft = vim.bo[buf].filetype
       if ft == "trouble" then
         local trouble = require "trouble"
         trouble.next()
@@ -555,10 +558,14 @@ M.global = function()
     require("utils").open_buffer_in_float(vim.api.nvim_get_current_buf())
   end, { desc = "Open current buffer in floating window" })
 
+  vim.api.nvim_create_user_command("TranslateLLM", function()
+    require("translate_llm").translate()
+  end, { range = true, desc = "Translate current line/selection via LLM (Quotio Haiku)" })
+
   create_keymap("n", "<S-Tab>", function()
     for _, win in ipairs(vim.api.nvim_list_wins()) do
       local buf = vim.api.nvim_win_get_buf(win)
-      local ft = vim.api.nvim_buf_get_option(buf, "filetype")
+      local ft = vim.bo[buf].filetype
       if ft == "trouble" then
         local trouble = require "trouble"
         trouble.prev()

@@ -34,6 +34,8 @@ local function read_claude_token_from_keychain()
 end
 
 
+local QUOTIO_MODELS = require("configs.quotio_models").ids
+
 local function build_acp_adapters()
   local adapters = {
     opts = {
@@ -129,14 +131,34 @@ return {
         },
       },
     },
-    -- ACP adapters only — we authenticate via ChatGPT / Claude Code OAuth
-    -- (no OpenAI API key), so HTTP adapters are not used.
     adapters = {
       acp = build_acp_adapters(),
       http = {
         opts = {
           show_presets = false,
         },
+        quotio = function()
+          return require("codecompanion.adapters").extend("openai_compatible", {
+            name = "quotio",
+            formatted_name = "Quotio Local",
+            env = {
+              api_key = "quotio-local-EB898030-86CA-4C25-A5E9-FD138FD83C92",
+              url = "http://127.0.0.1:8081",
+              chat_url = "/v1/chat/completions",
+              models_endpoint = "/v1/models",
+            },
+            schema = {
+              model = {
+                order = 1,
+                mapping = "parameters",
+                type = "enum",
+                desc = "Quotio Local model",
+                default = QUOTIO_MODELS[1],
+                choices = QUOTIO_MODELS,
+              },
+            },
+          })
+        end,
       },
     },
     -- Interactions configuration
@@ -240,6 +262,7 @@ return {
     -- Core windows
     { "<leader>cc", "<cmd>CodeCompanionChat<cr>",              desc = "CC: New Chat (default)", mode = { "n", "v" } },
     { "<leader>cC", "<cmd>CodeCompanionChat claude_code<cr>",  desc = "CC: Claude ACP Chat",    mode = { "n", "v" } },
+    { "<leader>cQ", "<cmd>CodeCompanionChat quotio<cr>",       desc = "CC: Quotio Local Chat",  mode = { "n", "v" } },
     { "<leader>cX", "<cmd>CodeCompanionChat codex<cr>",        desc = "CC: Codex ACP Chat",     mode = { "n", "v" } },
     { "<leader>ct", "<cmd>CodeCompanionChat Toggle<cr>",       desc = "CC: Toggle Chat",       mode = { "n", "v" } },
     { "<leader>ci", "<cmd>CodeCompanion<cr>",                  desc = "CC: Inline Prompt",     mode = { "n", "v" } },

@@ -1,9 +1,6 @@
-local telescope_builtin = require "telescope.builtin"
-local telescope = require "telescope"
-local utils = require "utils"
-local add_to_trouble = require("trouble.sources.telescope").add
-local open_with_trouble = require("trouble.sources.telescope").open
-local telescope_previewers = require "telescope.previewers"
+-- NOTE: All telescope/trouble modules are required lazily inside functions so
+-- that requiring this spec file (done eagerly from keymaps.lua) does NOT pull
+-- telescope and its dependencies (treesitter, trouble) into startup.
 local picker_label_width = 18
 
 local function get_preview_lines(bufnr)
@@ -23,6 +20,7 @@ local function get_preview_lines(bufnr)
 end
 
 local function create_picker_previewer()
+  local telescope_previewers = require "telescope.previewers"
   return telescope_previewers.new_buffer_previewer {
     define_preview = function(self, entry)
       local preview_bufnr = self.state.bufnr
@@ -76,7 +74,7 @@ end
 local function smart_search(search_func, search_options, fallback_options)
   -- 检查当前是否在nvim-tree中
   local current_buf = vim.api.nvim_get_current_buf()
-  local buf_type = vim.api.nvim_buf_get_option(current_buf, "filetype")
+  local buf_type = vim.bo[current_buf].filetype
 
   if buf_type == "NvimTree" then
     -- 在nvim-tree中，获取当前节点路径并在该路径下搜索
@@ -114,7 +112,15 @@ end
 
 -- Telescope keymaps have been moved to lua/keymaps.lua
 
-local config = {
+local function build_options()
+  local actions = require "telescope.actions"
+  local previewers = require "telescope.previewers"
+  local sorters = require "telescope.sorters"
+  local themes = require "telescope.themes"
+  local add_to_trouble = require("trouble.sources.telescope").add
+  local open_with_trouble = require("trouble.sources.telescope").open
+
+  local config = {
   vimgrep_arguments = {
     "rg",
     "-L",
@@ -157,7 +163,7 @@ local config = {
     height = 0.40,
     preview_cutoff = 8,
   },
-  file_sorter = require("telescope.sorters").get_fuzzy_file,
+  file_sorter = sorters.get_fuzzy_file,
   file_ignore_patterns = {
     "node_modules",
     ".git",
@@ -167,18 +173,18 @@ local config = {
     "*.pyc",
     "__pycache__",
   },
-  generic_sorter = require("telescope.sorters").get_generic_fuzzy_sorter,
+  generic_sorter = sorters.get_generic_fuzzy_sorter,
   path_display = { "truncate" },
   winblend = 0,
   border = {},
   borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
   color_devicons = true,
   set_env = { ["COLORTERM"] = "truecolor" }, -- default = nil,
-  file_previewer = require("telescope.previewers").vim_buffer_cat.new,
-  grep_previewer = require("telescope.previewers").vim_buffer_vimgrep.new,
-  qflist_previewer = require("telescope.previewers").vim_buffer_qflist.new,
+  file_previewer = previewers.vim_buffer_cat.new,
+  grep_previewer = previewers.vim_buffer_vimgrep.new,
+  qflist_previewer = previewers.vim_buffer_qflist.new,
   -- Developer configurations: Not meant for general override
-  buffer_previewer_maker = require("telescope.previewers").buffer_previewer_maker,
+  buffer_previewer_maker = previewers.buffer_previewer_maker,
 
   -- 性能优化配置
   cache_picker = {
@@ -193,49 +199,36 @@ local config = {
 
   mappings = {
     n = {
-      ["<leader>q"] = require("telescope.actions").close,
-      ["q"] = require("telescope.actions").close,
+      ["<leader>q"] = actions.close,
+      ["q"] = actions.close,
     },
     i = {
       ["<c-l>"] = open_with_trouble,
       ["<c-a>"] = add_to_trouble,
-      ["<C-j>"] = require("telescope.actions").move_selection_next,
-      ["<C-k>"] = require("telescope.actions").move_selection_previous,
-      ["<Down>"] = require("telescope.actions").cycle_history_next,
-      ["<Up>"] = require("telescope.actions").cycle_history_prev,
+      ["<C-j>"] = actions.move_selection_next,
+      ["<C-k>"] = actions.move_selection_previous,
+      ["<Down>"] = actions.cycle_history_next,
+      ["<Up>"] = actions.cycle_history_prev,
     },
   },
 }
+
+  return {
+    defaults = config,
+    extensions = {
+      ["ui-select"] = {
+        themes.get_dropdown(vim.tbl_extend("force", config, {
+          layout_config = {
+            height = 0.5,
+            width = 0.5,
+          },
+        })),
+      },
+    },
+  }
+end
 
 local extensions_list = { "fzf", "ui-select", "projects" }
-
-local options = {
-  defaults = config,
-  extensions = {
-    ["ui-select"] = {
-      require("telescope.themes").get_dropdown(vim.tbl_extend("force", config, {
-        layout_config = {
-          height = 0.5,
-          width = 0.5,
-        },
-      })),
-
-      -- pseudo code / specification for writing custom displays, like the one
-      -- for "codeactions"
-      -- specific_opts = {
-      --   [kind] = {
-      --     make_indexed = function(items) -> indexed_items, width,
-      --     make_displayer = function(widths) -> displayer
-      --     make_display = function(displayer) -> function(e)
-      --     make_ordinal = function(e) -> string
-      --   },
-      --   -- for example to disable the custom builtin "codeactions" display
-      --      do the following
-      --   codeactions = false,
-      -- }
-    },
-  },
-}
 
 local function setHl()
   local function set_preview_line_highlight()
@@ -329,6 +322,7 @@ M.select_buffers_and_tabs = function()
 
   local entries = {}
   local current_buf = vim.api.nvim_get_current_buf()
+  local current_tab = vim.api.nvim_get_current_tabpage()
 
   for _, view in ipairs(diffview_lib.views) do
     local view_type = "view"
@@ -369,6 +363,33 @@ M.select_buffers_and_tabs = function()
   end
 
   if #entries > 0 then
+    entries[#entries + 1] = {
+      value = nil,
+      kind = "divider",
+      ordinal = "zzzz divider tabs",
+      display = string.format("  %-" .. picker_label_width .. "s %s", "", string.rep("-", 24) .. " tabs "),
+    }
+  end
+
+  local tabs = vim.api.nvim_list_tabpages()
+  for index, tab in ipairs(tabs) do
+    local win = vim.api.nvim_tabpage_get_win(tab)
+    local buf = vim.api.nvim_win_get_buf(win)
+    local buf_name = vim.api.nvim_buf_get_name(buf)
+    local display_name = buf_name == "" and "[No Name]" or vim.fn.fnamemodify(buf_name, ":~:.")
+    local modified = vim.bo[buf].modified and " [+]" or ""
+    local prefix = tab == current_tab and "*" or " "
+
+    entries[#entries + 1] = {
+      value = tab,
+      kind = "tab",
+      index = index,
+      ordinal = string.format("tab %d %s", index, display_name),
+      display = string.format("%s %-" .. picker_label_width .. "s %s%s", prefix, "[tab " .. index .. "]", display_name, modified),
+    }
+  end
+
+  if #tabs > 0 then
     entries[#entries + 1] = {
       value = nil,
       kind = "divider",
@@ -420,6 +441,13 @@ M.select_buffers_and_tabs = function()
           return
         end
 
+        if selection.kind == "tab" then
+          if selection.value and vim.api.nvim_tabpage_is_valid(selection.value) then
+            vim.api.nvim_set_current_tabpage(selection.value)
+          end
+          return
+        end
+
         if selection.kind == "buffer" then
           vim.cmd("buffer " .. selection.value)
         end
@@ -436,7 +464,7 @@ M.smart_find_files = function()
 
   -- Smart search: check if in nvim-tree
   local current_buf = vim.api.nvim_get_current_buf()
-  local buf_type = vim.api.nvim_buf_get_option(current_buf, "filetype")
+  local buf_type = vim.bo[current_buf].filetype
 
   if buf_type == "NvimTree" then
     local api = require "nvim-tree.api"
@@ -463,7 +491,7 @@ M.smart_live_grep = function()
 
   -- Smart search: check if in nvim-tree
   local current_buf = vim.api.nvim_get_current_buf()
-  local buf_type = vim.api.nvim_buf_get_option(current_buf, "filetype")
+  local buf_type = vim.bo[current_buf].filetype
 
   local cur_word = utils.get_current_word()
   local _ret = string.find(cur_word, "[a-zA-Z_]+")
@@ -553,7 +581,8 @@ return {
     dependencies = { "nvim-treesitter/nvim-treesitter", "folke/trouble.nvim" },
     cmd = { "Telescope" },
     config = function()
-      telescope.setup(options)
+      local telescope = require "telescope"
+      telescope.setup(build_options())
 
       for _, ext in ipairs(extensions_list) do
         telescope.load_extension(ext)
